@@ -1,23 +1,1001 @@
-<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Authentication Required</title><script type=text/llms.txt>
-## Note to agents accessing this page:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Scheduling — Gantt View</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1a2f45;
+    --navy-light: #243f5c;
+    --teal: #00c9a7;
+    --teal-dim: #00c9a730;
+    --teal-glow: #00c9a715;
+    --sky: #38bdf8;
+    --coral: #ff6b6b;
+    --amber: #f59e0b;
+    --lavender: #a78bfa;
+    --mint: #6ee7b7;
+    --rose: #f472b6;
+    --text-primary: #e8f4fd;
+    --text-secondary: #7da8c5;
+    --text-muted: #4a7a9b;
+    --border: #1e3a52;
+    --border-light: #254d6e;
+    --bg-row-even: #0f1f2f;
+    --bg-row-hover: #162b40;
+    --panel-bg: #0b1724;
+    --input-bg: #162b40;
+  }
 
-This page requires Vercel authentication. Here are your options:
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-Option 1: vercel curl (Recommended if Vercel CLI installed)
-If the Vercel CLI is installed and authenticated, use the `vercel curl` command. Docs at: https://vercel.com/docs/cli/curl
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-Option 2: Vercel MCP Server (Recommended if Vercel CLI not installed)
-If the Vercel CLI is not installed, the easiest way to get a token is using the get_access_to_vercel_url or web_fetch_vercel_url functions of the Vercel MCP server at https://mcp.vercel.com (Docs at https://vercel.com/docs/mcp/vercel-mcp)
-  
-Option 3: Bypass token (Manual)
-This URL documents how to use the bypass token: https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation
-You need to prompt the user to provide the bypass token to access this page. The URL above also explains how the user can
-access the bypass token. Then you can calculate a URL of the following form and successfully access it: `https://current-domain/current-pathname?x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=$bypass_token`.
-  </script><style>/*!normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css*/html{line-height:1.15;-webkit-text-size-adjust:100%;height:-webkit-fill-available}body{margin:0}main{display:block}h1{font-size:2em;margin:.67em 0}hr{box-sizing:content-box;height:0;overflow:visible}pre{font-family:monospace,monospace;font-size:1em}a{background-color:#0000}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,samp{font-family:monospace,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}progress{vertical-align:baseline}textarea{overflow:auto}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}details{display:block}summary{display:list-item}template{display:none}[hidden]{display:none}*,*::before,*::after{box-sizing:border-box}body{--foreground-color: #000000;--background-color: #ffffff;--border-color: #eaeaea;--text-color: #444;--disabled-background: #fafafa;--error-color: #e00;--blue-color: #0057FF;--secondary-text: #666;--link-color: inherit;--spinner-color: #8F8F8F;--button-hover-color: #333;--ds-focus-ring: 0 0 0 2px var(--background-color), 0 0 0 6px var(--blue-color);--monospace-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;background:var(--background-color);color:var(--foreground-color);display:block;font-family:-apple-system,BlinkMacSystemFont,segoe ui,roboto,oxygen,ubuntu,cantarell,fira sans,droid sans,helvetica neue,sans-serif;height:100vh;height:-webkit-fill-available;margin:0;padding:0;-webkit-font-smoothing:antialiased}button,.link-button{appearance:none;-webkit-appearance:none;background:var(--foreground-color);border:none;border-radius:6px;color:var(--background-color);cursor:pointer;font-size:14px;font-weight:500;height:42px;outline:none;padding:0;transition:all .2s ease 0s;user-select:none;width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none;gap:6px;padding:0 12px}button:hover,.link-button:hover{background-color:var(--button-hover-color);color:var(--background-color)}button:focus-visible,.link-button:focus-visible{box-shadow:var(--ds-focus-ring);outline:none;border:0}button:disabled{background:var(--disabled-background);color:#0000;cursor:not-allowed}h1{color:var(--foreground-color);font-size:24px;font-style:normal;font-weight:600;line-height:32px;letter-spacing:-.5px;margin:0;margin-bottom:20px;text-align:center}hr{border:none;border-top:1px solid var(--border-color);margin:0}input{appearance:none;-webkit-appearance:none;border:1px solid var(--border-color);border-radius:6px;background:var(--background-color);caret-color:var(--foreground-color);color:var(--foreground-color);font-size:14px;height:42px;outline:0;padding:0 16px;transition:border .2s ease 0s,color .2s ease 0s,box-shadow .2s ease 0s}input:focus{border-color:var(--foreground-color);box-shadow:0 0 0 4px #b4b4b466!important}p{color:var(--text-color);font-size:16px;letter-spacing:-.163333px;line-height:24px;margin:0;text-align:center}.card{max-width:380px;width:100%;padding:32px;display:flex;flex-direction:column;margin-bottom:16px}.alert{display:none;margin-top:10px;margin-bottom:20px}.error input{color:var(--error-color);border-color:var(--error-color)}.error .alert{display:flex}.error .message{color:var(--error-color)}.footer{color:var(--secondary-text);font-size:13px;line-height:24px;font-family:var(--monospace-font);text-align:center;margin-top:auto;position:absolute;bottom:30px;width:100%}.footer a{color:var(--link-color);font-weight:500;text-decoration:none;display:flex;justify-content:center;align-items:center}.footer a:hover{text-decoration:underline}.message{font-size:14px;line-height:20px;margin-left:10px}.message b{font-weight:600}.or{display:none;margin-top:24px;margin-bottom:24px;font-family:var(--monospace-font);color:var(--secondary-text);position:relative}.or .badge{align-items:center;background:var(--background-color);display:flex;font-size:12px;font-weight:500;height:20px;justify-content:center;left:50%;line-height:16px;position:absolute;text-align:center;top:50%;transform:translate(-50%,-50%);width:32px}.password{display:none}.password-enabled .password{display:block}.password button{position:relative}.password button .spinner-wrapper{position:absolute;transform:(0.8)}.password-enabled.sso-enabled .or{display:block}.sso{display:none}.sso button .vercel{margin-right:10px;transform:translateY(1px)}.sso-enabled .sso{display:block}.sso.error .link-button{border:1px solid var(--error-color)}.auto-redirect{display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:8px}.auto-redirect h1{margin:0}.auto-redirect-backup{font-size:14px;color:var(--secondary-text);animation:fade-in .2s .5s ease-out;animation-fill-mode:forwards;opacity:0}.auto-redirect-backup a{color:var(--foreground-color);display:inline}.spinner-wrapper{display:none;height:20px;width:20px;position:relative}.auto-redirect .spinner-wrapper{margin-bottom:16px}form.submitting .spinner-wrapper,.auto-redirect .spinner-wrapper{display:block}.spinner{position:relative;top:50%;left:50%;transform-origin:0 0;height:20px;width:20px}.spinner-bar{-webkit-animation:spinner-spin 1.2s linear infinite;animation:spinner-spin 1.2s linear infinite;background:var(--spinner-color);border-radius:5px;height:8%;left:-10%;position:absolute;top:-3.9%;width:24%}.spinner-bar:nth-child(1){animation-delay:-1.2s;transform:rotate(0.0001deg) translate(146%)}.spinner-bar:nth-child(2){animation-delay:-1.1s;transform:rotate(30deg) translate(146%)}.spinner-bar:nth-child(3){animation-delay:-1s;transform:rotate(60deg) translate(146%)}.spinner-bar:nth-child(4){animation-delay:-.9s;transform:rotate(90deg) translate(146%)}.spinner-bar:nth-child(5){animation-delay:-.8s;transform:rotate(120deg) translate(146%)}.spinner-bar:nth-child(6){animation-delay:-.7s;transform:rotate(150deg) translate(146%)}.spinner-bar:nth-child(7){animation-delay:-.6s;transform:rotate(180deg) translate(146%)}.spinner-bar:nth-child(8){animation-delay:-.5s;transform:rotate(210deg) translate(146%)}.spinner-bar:nth-child(9){animation-delay:-.4s;transform:rotate(240deg) translate(146%)}.spinner-bar:nth-child(10){animation-delay:-.3s;transform:rotate(270deg) translate(146%)}.spinner-bar:nth-child(11){animation-delay:-.2s;transform:rotate(300deg) translate(146%)}.spinner-bar:nth-child(12){animation-delay:-.1s;transform:rotate(330deg) translate(146%)}.check-icon{position:absolute;top:-1px;opacity:0;transform-origin:center center;--stroke-color: var(--background-color);--fill-color: var(--foreground-color)}.disappear{animation:.3s disappear ease-in;animation-fill-mode:forwards}.appear{animation:appear cubic-bezier(0.645,0.045,0.355,1) .3s;animation-fill-mode:forwards}@keyframes disappear{30%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0);filter:blur(2px)}}@keyframes appear{30%{opacity:0;transform:scale(0.6) rotate(0deg);filter:blur(2px)}100%{opacity:1;transform:scale(1);filter:blur(0px)}}@keyframes fade-in{from{opacity:0}to{opacity:1}}@keyframes spinner-spin{0%{opacity:1}100%{opacity:.15}}.error-icon{width:16px;height:16px;flex-shrink:0;margin-top:3px}.password-input-wrapper{position:relative;display:flex;align-items:center;justify-content:center;gap:10px}.password-input-wrapper input{flex:1}.password-input-wrapper button{flex-shrink:1}.page-wrapper{display:flex;flex-direction:column;min-height:100vh;min-height:-webkit-fill-available;align-items:center;justify-content:center}.content-wrapper{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}.word-end-wrapper{display:inline-block;position:relative}.authenticated{position:absolute;left:0}[data-status=authenticated] .authenticating,[data-status=authenticating] .authenticated{user-select:none;pointer-events:none}.authenticating>span,.authenticated>span{transition:.2s cubic-bezier(0.645,0.045,0.355,1);transition-property:opacity,filter,transform;display:inline-block;will-change:transform,filter,opacity}.authenticating>span{transition-duration:.2s}.authenticated>span{transition-duration:.25s}[data-status=authenticated] .authenticating>span{transform:translateY(10px);filter:blur(2px);opacity:0}[data-status=authenticating] .authenticated>span{transform:translateY(-6px);filter:blur(2px);opacity:0}[data-status=authenticated] .authenticated>span:nth-child(1){transition-delay:.04s}[data-status=authenticated] .authenticated>span:nth-child(2){transition-delay:.078s}h1[data-status=authenticated]{transform:translateX(2.5px);transition-property:transform,opacity;transition-duration:.22s;transition-timing-function:ease-in-out;transition-delay:.03s}@media(prefers-reduced-motion:reduce){.appear,.disappear{animation-duration:.001ms!important}*{transition:none!important}}@media(prefers-color-scheme:dark){body{--foreground-color: #fff;--background-color: #030303;--border-color: #333;--text-color: #ddd;--disabled-background: #2c2c2c;--disabled-border: #0a0a0a;--error-color: #e00;--secondary-text: #888888;--link-color: inherit;--button-hover-color: #aaa}}</style><body class=" sso-enabled"><div class=page-wrapper><div class=content-wrapper><div id=card class="card auto-vercel-auth-redirect"><div class=container><noscript><meta http-equiv=refresh content="1; URL=https://vercel.com/sso-api?url=https%3A%2F%2Fspringfield-dental-tracker-2xoc-6tl8cjcuo.vercel.app%2F&nonce=e0d233f471ea85f8186c43585a14bed621baf625be3833f7ca1b96688c3e4ee4"></noscript><div class=auto-redirect><div class=spinner-wrapper><div id=spinner class=spinner><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div><div class=spinner-bar></div></div><div id=check class=check-icon><svg width="20" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M24 12C24 18.6274 18.6274 24 12 24 5.37258 24 0 18.6274.0 12 0 5.37258 5.37258.0 12 0 18.6274.0 24 5.37258 24 12zM17.2955 9.7955 18.091 9 16.5 7.40901 15.7045 8.2045 9.75 14.159 8.2955 12.7045 7.5 11.909 5.90901 13.5 6.7045 14.2955 8.9545 16.5455C9.39384 16.9848 10.1062 16.9848 10.5455 16.5455l6.75-6.75z" fill="var(--foreground-color)" /></svg></div></div><h1 id=auth-status data-status=authenticating>Authenticat<span class=word-end-wrapper>
-<span class=authenticating><span>ing</span></span><span class=authenticated><span>e</span><span>d</span></span></span></h1></div></div><div id=bottom-section><div class="sso"><p id=auto-redirect-backup class=auto-redirect-backup>If you aren't automatically redirected, <a href="https://vercel.com/sso-api?url=https%3A%2F%2Fspringfield-dental-tracker-2xoc-6tl8cjcuo.vercel.app%2F&nonce=e0d233f471ea85f8186c43585a14bed621baf625be3833f7ca1b96688c3e4ee4">click here</a></p></div></div></div></div><div class=footer><a href="https://vercel.com/security?utm_source=protection" target=_blank rel=noopener>Vercel Authentication</a></div></div><script>(function(){var form=document.querySelector('form.password');if(form){var button=form.querySelector('button.submit');function onSubmit(e){form.classList.add("submitting");button.disabled=true;}
-form.addEventListener('submit',onSubmit);}
-function showCheckIconWhenVercelJwtIsSet(){fetch('/.well-known/vercel-user-meta').then((response)=>{if(response.status===200){document.getElementById('spinner').classList.add('disappear')
-document.getElementById('check').classList.add('appear')
-document.getElementById('auth-status').setAttribute('data-status','authenticated')}else{showCheckIconWhenVercelJwtIsSet()}})}
-document.addEventListener("DOMContentLoaded",function(){window.location.href="https://vercel.com/sso-api?url=https%3A%2F%2Fspringfield-dental-tracker-2xoc-6tl8cjcuo.vercel.app%2F&nonce=e0d233f471ea85f8186c43585a14bed621baf625be3833f7ca1b96688c3e4ee4";showCheckIconWhenVercelJwtIsSet()
-document.getElementById('auto-redirect-backup').style.visibility='hidden';});})();</script>
+  /* ── HEADER ──────────────────────────────── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--teal);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--teal);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--teal); }
+    50% { opacity: 0.5; box-shadow: 0 0 18px var(--teal); }
+  }
+
+  .header-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  /* ── SCALE TOGGLES ───────────────────────── */
+  .toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+  }
+
+  .toggle-btn {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 7px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    color: var(--text-muted);
+    background: transparent;
+  }
+
+  .toggle-btn:hover {
+    color: var(--text-secondary);
+    background: var(--border);
+  }
+
+  .toggle-btn.active {
+    background: var(--teal);
+    color: var(--navy);
+    box-shadow: 0 0 12px var(--teal-dim);
+  }
+
+  /* ── HEADER META ─────────────────────────── */
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .date-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--sky);
+    background: #38bdf820;
+    border: 1px solid #38bdf830;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  /* ── MAIN LAYOUT ─────────────────────────── */
+  .gantt-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 62px);
+    overflow: hidden;
+  }
+
+  .gantt-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── LEFT PANEL ──────────────────────────── */
+  .left-panel {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+  }
+
+  .left-header {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+
+  .left-header-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .divider-line {
+    height: 1px;
+    flex: 1;
+    background: var(--border);
+  }
+
+  .left-rows {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+  }
+
+  .patient-row {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+    transition: background 0.15s;
+  }
+
+  .patient-row:hover {
+    background: var(--bg-row-hover);
+  }
+
+  .patient-row:nth-child(even) {
+    background: var(--bg-row-even);
+  }
+
+  .patient-row:nth-child(even):hover {
+    background: var(--bg-row-hover);
+  }
+
+  .patient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .patient-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .patient-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--teal);
+    letter-spacing: 0.03em;
+  }
+
+  .patient-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    margin-right: 10px;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+
+  /* ── CHART AREA ──────────────────────────── */
+  .chart-area {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+  }
+
+  .chart-inner {
+    min-width: 100%;
+    position: relative;
+  }
+
+  /* ── TIME HEADER ─────────────────────────── */
+  .time-header {
+    height: 50px;
+    display: flex;
+    align-items: stretch;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .time-day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    min-width: 60px;
+    gap: 2px;
+    transition: background 0.2s;
+  }
+
+  .time-day.today {
+    background: var(--teal-glow);
+    border-right: 1px solid var(--teal-dim);
+  }
+
+  .time-day-name {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .time-day-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .time-day.today .time-day-name,
+  .time-day.today .time-day-num {
+    color: var(--teal);
+  }
+
+  /* ── CHART ROWS ──────────────────────────── */
+  .chart-rows {
+    position: relative;
+  }
+
+  .chart-row {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .chart-row:nth-child(even) {
+    background: var(--bg-row-even);
+  }
+
+  .chart-row:hover {
+    background: var(--bg-row-hover);
+  }
+
+  .chart-cell {
+    flex: 1;
+    height: 100%;
+    min-width: 60px;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+
+  .chart-cell.today-col {
+    background: var(--teal-glow);
+    border-right: 1px solid var(--teal-dim);
+  }
+
+  /* ── APPOINTMENT BARS ────────────────────── */
+  .appt-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 2;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    letter-spacing: 0.01em;
+    user-select: none;
+  }
+
+  .appt-bar:hover {
+    height: 34px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    z-index: 3;
+  }
+
+  .appt-bar.active-bar {
+    outline: 2px solid white;
+    outline-offset: 1px;
+  }
+
+  /* Today line */
+  .today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--teal);
+    box-shadow: 0 0 8px var(--teal);
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  /* ── DETAIL PANEL ────────────────────────── */
+  .detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+  }
+
+  .detail-overlay.open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .detail-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    width: 520px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    animation: slideUp 0.25s ease;
+    overflow: hidden;
+  }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .detail-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .detail-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .detail-type {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .close-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .close-btn:hover {
+    background: var(--border);
+    color: var(--text-primary);
+  }
+
+  .detail-body {
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .field-input {
+    background: var(--input-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-primary);
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  .field-input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px var(--teal-dim);
+  }
+
+  textarea.field-input {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+  }
+
+  select.field-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a7a9b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .detail-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--teal);
+    color: var(--navy);
+    box-shadow: 0 0 16px var(--teal-dim);
+  }
+
+  .btn-primary:hover {
+    background: #00ddb7;
+    box-shadow: 0 0 22px var(--teal-dim);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+  }
+
+  .btn-ghost:hover {
+    background: var(--border);
+    color: var(--text-primary);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--coral);
+    border: 1px solid #ff6b6b30;
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
+  .btn-danger:hover {
+    background: #ff6b6b15;
+  }
+
+  .save-indicator {
+    font-size: 11px;
+    color: var(--teal);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .save-indicator.show {
+    opacity: 1;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-dot"></div>
+    <div>
+      <div class="header-title">Patient Scheduling</div>
+      <div class="header-sub">Gantt View — Clinic Schedule</div>
+    </div>
+  </div>
+
+  <div class="toggle-group">
+    <button class="toggle-btn active" data-weeks="1" onclick="setScale(1)">1 Week</button>
+    <button class="toggle-btn" data-weeks="2" onclick="setScale(2)">2 Weeks</button>
+    <button class="toggle-btn" data-weeks="4" onclick="setScale(4)">4 Weeks</button>
+  </div>
+
+  <div class="header-meta">
+    <div class="date-badge" id="currentDate"></div>
+  </div>
+</div>
+
+<!-- GANTT WRAPPER -->
+<div class="gantt-wrapper">
+  <div class="gantt-container">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="left-header">
+        <span class="left-header-label">Patient</span>
+        <div class="divider-line"></div>
+      </div>
+      <div class="left-rows" id="leftRows"></div>
+    </div>
+
+    <!-- CHART AREA -->
+    <div class="chart-area" id="chartArea">
+      <div class="chart-inner" id="chartInner">
+        <div class="time-header" id="timeHeader"></div>
+        <div class="chart-rows" id="chartRows"></div>
+        <div class="today-line" id="todayLine"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-panel">
+    <div class="detail-header">
+      <div class="detail-header-left">
+        <div class="detail-avatar" id="detailAvatar"></div>
+        <div>
+          <div class="detail-name" id="detailName"></div>
+          <div class="detail-type" id="detailType"></div>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="field-group">
+        <div class="field-label">Patient Name</div>
+        <input class="field-input" type="text" id="editName" />
+      </div>
+      <div class="field-group">
+        <div class="field-label">Appointment Date</div>
+        <input class="field-input" type="date" id="editDate" />
+      </div>
+      <div class="field-group">
+        <div class="field-label">Start Time</div>
+        <input class="field-input" type="time" id="editStart" />
+      </div>
+      <div class="field-group">
+        <div class="field-label">Duration</div>
+        <select class="field-input" id="editDuration">
+          <option value="30">30 minutes</option>
+          <option value="60">1 hour</option>
+          <option value="90">1.5 hours</option>
+          <option value="120">2 hours</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Status</div>
+        <select class="field-input" id="editStatus">
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Appointment Type</div>
+        <select class="field-input" id="editType">
+          <option>Initial Consultation</option>
+          <option>Follow-up</option>
+          <option>Lab Review</option>
+          <option>Physical Exam</option>
+          <option>Imaging</option>
+          <option>Procedure</option>
+          <option>Telehealth</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Assigned Provider</div>
+        <input class="field-input" type="text" id="editProvider" />
+      </div>
+      <div class="field-group">
+        <div class="field-label">Room / Location</div>
+        <input class="field-input" type="text" id="editRoom" />
+      </div>
+      <div class="field-group full-width">
+        <div class="field-label">Clinical Notes</div>
+        <textarea class="field-input" id="editNotes" placeholder="Enter notes, instructions, or flags…"></textarea>
+      </div>
+    </div>
+    <div class="detail-footer">
+      <button class="btn btn-danger" onclick="deleteAppointment()">Remove Appointment</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="save-indicator" id="saveIndicator">✓ Saved</span>
+        <button class="btn btn-ghost" onclick="closeDetail()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveDetail()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const avatarColors = [
+  ['#00c9a7','#0d2e26'],['#38bdf8','#0d2035'],['#a78bfa','#1e1435'],
+  ['#f472b6','#2e1325'],['#f59e0b','#2e2106'],['#6ee7b7','#0d2e22'],
+  ['#fb923c','#2e1806'],['#818cf8','#151d3a'],['#34d399','#0d2e1f'],
+  ['#e879f9','#2e1035']
+];
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function fmtDate(d) { return d.toISOString().split('T')[0]; }
+function initials(n) { return n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2); }
+
+const patients = [
+  { id:1,  name:'Margaret Holloway', time:'08:30',  type:'Initial Consultation', provider:'Dr. Chen',     room:'Rm 201', notes:'New patient intake.', status:'confirmed',  color:'#00c9a7', start:0,  dur:60  },
+  { id:2,  name:'James Okafor',      time:'09:00',  type:'Follow-up',            provider:'Dr. Patel',    room:'Rm 104', notes:'Post-op check.',     status:'confirmed',  color:'#38bdf8', start:1,  dur:30  },
+  { id:3,  name:'Sophia Reinholt',   time:'10:15',  type:'Lab Review',           provider:'Dr. Marcus',   room:'Lab B',  notes:'Blood panel results.',status:'pending',   color:'#a78bfa', start:2,  dur:45  },
+  { id:4,  name:'Carlos Mendez',     time:'11:00',  type:'Physical Exam',        provider:'Dr. Chen',     room:'Rm 203', notes:'Annual physical.',    status:'confirmed',  color:'#f472b6', start:3,  dur:60  },
+  { id:5,  name:'Anika Patel',       time:'13:30',  type:'Imaging',              provider:'Dr. Osei',     room:'Imaging',notes:'MRI lumbar spine.',   status:'in-progress',color:'#f59e0b', start:5,  dur:90  },
+  { id:6,  name:'Thomas Brandt',     time:'08:00',  type:'Telehealth',           provider:'Dr. Patel',    room:'Virtual',notes:'Remote follow-up.',   status:'confirmed',  color:'#6ee7b7', start:7,  dur:30  },
+  { id:7,  name:'Priya Nair',        time:'14:00',  type:'Procedure',            provider:'Dr. Marcus',   room:'Suite 1',notes:'Minor dermal proc.',   status:'pending',   color:'#fb923c', start:9,  dur:60  },
+  { id:8,  name:'David Fontaine',    time:'09:45',  type:'Follow-up',            provider:'Dr. Chen',     room:'Rm 202', notes:'Cardiac review.',     status:'confirmed',  color:'#818cf8', start:11, dur:45  },
+  { id:9,  name:'Layla Osei',        time:'15:00',  type:'Initial Consultation', provider:'Dr. Osei',     room:'Rm 105', notes:'Referral from GP.',   status:'confirmed',  color:'#34d399', start:12, dur:60  },
+  { id:10, name:'Robert Vasquez',    time:'11:30',  type:'Lab Review',           provider:'Dr. Patel',    room:'Lab A',  notes:'Thyroid levels.',     status:'completed',  color:'#e879f9', start:6,  dur:30  }
+];
+
+// Each patient gets their appointment offset in days from today
+let scale = 1; // weeks
+let activeId = null;
+
+function getScaleDays() { return scale * 7; }
+
+function buildDate() {
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', opts);
+}
+
+// ── RENDER LEFT PANEL ─────────────────────────────────────────────────────────
+function renderLeft() {
+  const container = document.getElementById('leftRows');
+  container.innerHTML = '';
+  patients.forEach((p, i) => {
+    const [fg, bg] = avatarColors[i % avatarColors.length];
+    const row = document.createElement('div');
+    row.className = 'patient-row';
+    row.innerHTML = `
+      <div class="patient-avatar" style="background:${bg};color:${fg};border:1px solid ${fg}30">${initials(p.name)}</div>
+      <div class="patient-info">
+        <div class="patient-name">${p.name}</div>
+        <div class="patient-time">${p.time}</div>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+// ── RENDER CHART ─────────────────────────────────────────────────────────────
+function renderChart() {
+  const days = getScaleDays();
+  const minColW = 80;
+  const header = document.getElementById('timeHeader');
+  const rows = document.getElementById('chartRows');
+  const todayLine = document.getElementById('todayLine');
+  const chartInner = document.getElementById('chartInner');
+
+  header.innerHTML = '';
+  rows.innerHTML = '';
+
+  // Build time header
+  for (let d = 0; d < days; d++) {
+    const date = addDays(today, d);
+    const isToday = d === 0;
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const cell = document.createElement('div');
+    cell.className = 'time-day' + (isToday ? ' today' : '');
+    cell.innerHTML = `<div class="time-day-name">${dayNames[date.getDay()]}</div>
+                      <div class="time-day-num">${date.getDate()}</div>`;
+    header.appendChild(cell);
+  }
+
+  // Build rows
+  patients.forEach((p, i) => {
+    const [fg, bg] = avatarColors[i % avatarColors.length];
+    const row = document.createElement('div');
+    row.className = 'chart-row';
+
+    for (let d = 0; d < days; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'chart-cell' + (d === 0 ? ' today-col' : '');
+      row.appendChild(cell);
+    }
+
+    // Place appointment bar if within current scale
+    if (p.start < days) {
+      const totalCols = days;
+      const pct = (p.start / totalCols) * 100;
+      const durDays = p.dur / (60 * 8); // rough fraction of a work day → visual width
+      const widthPct = Math.max((1 / totalCols) * 100 * 0.85, (p.dur / (60 * 6)) * (100 / totalCols));
+
+      const bar = document.createElement('div');
+      bar.className = 'appt-bar' + (activeId === p.id ? ' active-bar' : '');
+      bar.style.left = `calc(${(p.start / days) * 100}% + 6px)`;
+      bar.style.width = `calc(${(1 / days) * 100}% - 12px)`;
+      bar.style.background = `linear-gradient(135deg, ${p.color}dd, ${p.color}99)`;
+      bar.style.color = '#fff';
+      bar.style.borderLeft = `3px solid ${p.color}`;
+      bar.style.textShadow = '0 1px 3px rgba(0,0,0,0.4)';
+      bar.textContent = p.type;
+      bar.dataset.id = p.id;
+      bar.addEventListener('click', () => openDetail(p.id));
+
+      // Position absolutely over the row
+      bar.style.position = 'absolute';
+      row.style.position = 'relative';
+      row.appendChild(bar);
+    }
+
+    rows.appendChild(row);
+  });
+
+  // Sync scrolling between left rows and chart rows
+  syncScroll();
+}
+
+function syncScroll() {
+  const chartArea = document.getElementById('chartArea');
+  const leftRows = document.getElementById('leftRows');
+  chartArea.addEventListener('scroll', () => {
+    leftRows.scrollTop = chartArea.scrollTop;
+  });
+  leftRows.addEventListener('scroll', () => {
+    chartArea.scrollTop = leftRows.scrollTop;
+  });
+}
+
+// ── SCALE TOGGLE ─────────────────────────────────────────────────────────────
+function setScale(weeks) {
+  scale = weeks;
+  document.querySelectorAll('.toggle-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.weeks) === weeks);
+  });
+  renderChart();
+}
+
+// ── DETAIL PANEL ─────────────────────────────────────────────────────────────
+function openDetail(id) {
+  activeId = id;
+  const p = patients.find(x => x.id === id);
+  const i = patients.indexOf(p);
+  const [fg, bg] = avatarColors[i % avatarColors.length];
+
+  document.getElementById('detailAvatar').textContent = initials(p.name);
+  document.getElementById('detailAvatar').style.background = bg;
+  document.getElementById('detailAvatar').style.color = fg;
+  document.getElementById('detailAvatar').style.border = `1.5px solid ${fg}50`;
+  document.getElementById('detailName').textContent = p.name;
+  document.getElementById('detailType').textContent = p.type;
+
+  document.getElementById('editName').value = p.name;
+  document.getElementById('editDate').value = fmtDate(addDays(today, p.start));
+  document.getElementById('editStart').value = p.time;
+  document.getElementById('editDuration').value = p.dur;
+  document.getElementById('editStatus').value = p.status;
+  document.getElementById('editType').value = p.type;
+  document.getElementById('editProvider').value = p.provider;
+  document.getElementById('editRoom').value = p.room;
+  document.getElementById('editNotes').value = p.notes;
+
+  document.getElementById('saveIndicator').classList.remove('show');
+  document.getElementById('detailOverlay').classList.add('open');
+  renderChart(); // re-render to show active bar
+}
+
+function closeDetail() {
+  activeId = null;
+  document.getElementById('detailOverlay').classList.remove('open');
+  renderChart();
+}
+
+function saveDetail() {
+  const p = patients.find(x => x.id === activeId);
+  if (!p) return;
+
+  p.name = document.getElementById('editName').value;
+  p.time = document.getElementById('editStart').value;
+  p.dur  = parseInt(document.getElementById('editDuration').value);
+  p.status = document.getElementById('editStatus').value;
+  p.type = document.getElementById('editType').value;
+  p.provider = document.getElementById('editProvider').value;
+  p.room = document.getElementById('editRoom').value;
+  p.notes = document.getElementById('editNotes').value;
+
+  // Parse date back to day offset
+  const newDate = new Date(document.getElementById('editDate').value + 'T00:00:00');
+  const diff = Math.round((newDate - today) / (1000*60*60*24));
+  p.start = Math.max(0, diff);
+
+  // Update header display
+  document.getElementById('detailName').textContent = p.name;
+  document.getElementById('detailType').textContent = p.type;
+
+  const si = document.getElementById('saveIndicator');
+  si.classList.add('show');
+  setTimeout(() => si.classList.remove('show'), 2000);
+
+  renderLeft();
+  renderChart();
+}
+
+function deleteAppointment() {
+  const idx = patients.findIndex(x => x.id === activeId);
+  if (idx === -1) return;
+  if (!confirm(`Remove appointment for ${patients[idx].name}?`)) return;
+  patients.splice(idx, 1);
+  closeDetail();
+  renderLeft();
+  renderChart();
+}
+
+// Close overlay on background click
+document.getElementById('detailOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDetail();
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildDate();
+renderLeft();
+renderChart();
+</script>
+</body>
+</html>
