@@ -3,997 +3,2411 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patient Scheduling — Gantt View</title>
+<title>Dr. Teeth &amp; The Electric Mayhem — Lab Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #0d1b2a;
-    --navy-mid: #1a2f45;
-    --navy-light: #243f5c;
-    --teal: #00c9a7;
-    --teal-dim: #00c9a730;
-    --teal-glow: #00c9a715;
-    --sky: #38bdf8;
-    --coral: #ff6b6b;
-    --amber: #f59e0b;
-    --lavender: #a78bfa;
-    --mint: #6ee7b7;
-    --rose: #f472b6;
-    --text-primary: #e8f4fd;
-    --text-secondary: #7da8c5;
-    --text-muted: #4a7a9b;
-    --border: #1e3a52;
-    --border-light: #254d6e;
-    --bg-row-even: #0f1f2f;
-    --bg-row-hover: #162b40;
-    --panel-bg: #0b1724;
-    --input-bg: #162b40;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--navy);
-    color: var(--text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── HEADER ──────────────────────────────── */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 28px;
-    background: var(--panel-bg);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .logo-dot {
-    width: 10px;
-    height: 10px;
-    background: var(--teal);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--teal);
-    animation: pulse 2.4s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--teal); }
-    50% { opacity: 0.5; box-shadow: 0 0 18px var(--teal); }
-  }
-
-  .header-title {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--text-primary);
-  }
-
-  .header-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-top: 1px;
-  }
-
-  /* ── SCALE TOGGLES ───────────────────────── */
-  .toggle-group {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--navy-mid);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 4px;
-  }
-
-  .toggle-btn {
-    padding: 6px 16px;
-    border: none;
-    border-radius: 7px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: all 0.22s ease;
-    color: var(--text-muted);
-    background: transparent;
-  }
-
-  .toggle-btn:hover {
-    color: var(--text-secondary);
-    background: var(--border);
-  }
-
-  .toggle-btn.active {
-    background: var(--teal);
-    color: var(--navy);
-    box-shadow: 0 0 12px var(--teal-dim);
-  }
-
-  /* ── HEADER META ─────────────────────────── */
-  .header-meta {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .date-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--sky);
-    background: #38bdf820;
-    border: 1px solid #38bdf830;
-    padding: 4px 10px;
-    border-radius: 6px;
-  }
-
-  /* ── MAIN LAYOUT ─────────────────────────── */
-  .gantt-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 62px);
-    overflow: hidden;
-  }
-
-  .gantt-container {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  /* ── LEFT PANEL ──────────────────────────── */
-  .left-panel {
-    width: 240px;
-    flex-shrink: 0;
-    background: var(--panel-bg);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
-  }
-
-  .left-header {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    padding: 0 18px;
-    border-bottom: 1px solid var(--border);
-    gap: 10px;
-  }
-
-  .left-header-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  .divider-line {
-    height: 1px;
-    flex: 1;
-    background: var(--border);
-  }
-
-  .left-rows {
-    flex: 1;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-light) transparent;
-  }
-
-  .patient-row {
-    height: 52px;
-    display: flex;
-    align-items: center;
-    padding: 0 18px;
-    border-bottom: 1px solid var(--border);
-    cursor: default;
-    transition: background 0.15s;
-  }
-
-  .patient-row:hover {
-    background: var(--bg-row-hover);
-  }
-
-  .patient-row:nth-child(even) {
-    background: var(--bg-row-even);
-  }
-
-  .patient-row:nth-child(even):hover {
-    background: var(--bg-row-hover);
-  }
-
-  .patient-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .patient-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .patient-time {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--teal);
-    letter-spacing: 0.03em;
-  }
-
-  .patient-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 600;
-    margin-right: 10px;
-    flex-shrink: 0;
-    letter-spacing: 0;
-  }
-
-  /* ── CHART AREA ──────────────────────────── */
-  .chart-area {
-    flex: 1;
-    overflow: auto;
-    position: relative;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-light) transparent;
-  }
-
-  .chart-inner {
-    min-width: 100%;
-    position: relative;
-  }
-
-  /* ── TIME HEADER ─────────────────────────── */
-  .time-header {
-    height: 50px;
-    display: flex;
-    align-items: stretch;
-    background: var(--panel-bg);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 5;
-  }
-
-  .time-day {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid var(--border);
-    min-width: 60px;
-    gap: 2px;
-    transition: background 0.2s;
-  }
-
-  .time-day.today {
-    background: var(--teal-glow);
-    border-right: 1px solid var(--teal-dim);
-  }
-
-  .time-day-name {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  .time-day-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-
-  .time-day.today .time-day-name,
-  .time-day.today .time-day-num {
-    color: var(--teal);
-  }
-
-  /* ── CHART ROWS ──────────────────────────── */
-  .chart-rows {
-    position: relative;
-  }
-
-  .chart-row {
-    height: 52px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-  }
-
-  .chart-row:nth-child(even) {
-    background: var(--bg-row-even);
-  }
-
-  .chart-row:hover {
-    background: var(--bg-row-hover);
-  }
-
-  .chart-cell {
-    flex: 1;
-    height: 100%;
-    min-width: 60px;
-    border-right: 1px solid var(--border);
-    position: relative;
-  }
-
-  .chart-cell.today-col {
-    background: var(--teal-glow);
-    border-right: 1px solid var(--teal-dim);
-  }
-
-  /* ── APPOINTMENT BARS ────────────────────── */
-  .appt-bar {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 28px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    font-size: 11px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    z-index: 2;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    letter-spacing: 0.01em;
-    user-select: none;
-  }
-
-  .appt-bar:hover {
-    height: 34px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    z-index: 3;
-  }
-
-  .appt-bar.active-bar {
-    outline: 2px solid white;
-    outline-offset: 1px;
-  }
-
-  /* Today line */
-  .today-line {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--teal);
-    box-shadow: 0 0 8px var(--teal);
-    z-index: 4;
-    pointer-events: none;
-  }
-
-  /* ── DETAIL PANEL ────────────────────────── */
-  .detail-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s ease;
-  }
-
-  .detail-overlay.open {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(20px) scale(0.98); opacity: 0; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
-  }
-
-  .detail-panel {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-light);
-    border-radius: 16px;
-    width: 520px;
-    max-width: 90vw;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    animation: slideUp 0.25s ease;
-    overflow: hidden;
-  }
-
-  .detail-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .detail-header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .detail-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .detail-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .detail-type {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 1px;
-    font-family: 'DM Mono', monospace;
-    letter-spacing: 0.04em;
-  }
-
-  .close-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    border: 1px solid var(--border-light);
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-  }
-
-  .close-btn:hover {
-    background: var(--border);
-    color: var(--text-primary);
-  }
-
-  .detail-body {
-    padding: 20px 22px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .field-group.full-width {
-    grid-column: 1 / -1;
-  }
-
-  .field-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  .field-input {
-    background: var(--input-bg);
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    padding: 9px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text-primary);
-    transition: border-color 0.15s;
-    width: 100%;
-  }
-
-  .field-input:focus {
-    outline: none;
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px var(--teal-dim);
-  }
-
-  textarea.field-input {
-    resize: vertical;
-    min-height: 72px;
-    line-height: 1.5;
-  }
-
-  select.field-input {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a7a9b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-  }
-
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-  }
-
-  .detail-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 22px;
-    border-top: 1px solid var(--border);
-    gap: 10px;
-  }
-
-  .btn {
-    padding: 9px 20px;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.18s;
-    border: none;
-  }
-
-  .btn-primary {
-    background: var(--teal);
-    color: var(--navy);
-    box-shadow: 0 0 16px var(--teal-dim);
-  }
-
-  .btn-primary:hover {
-    background: #00ddb7;
-    box-shadow: 0 0 22px var(--teal-dim);
-  }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-light);
-  }
-
-  .btn-ghost:hover {
-    background: var(--border);
-    color: var(--text-primary);
-  }
-
-  .btn-danger {
-    background: transparent;
-    color: var(--coral);
-    border: 1px solid #ff6b6b30;
-    font-size: 12px;
-    padding: 8px 14px;
-  }
-
-  .btn-danger:hover {
-    background: #ff6b6b15;
-  }
-
-  .save-indicator {
-    font-size: 11px;
-    color: var(--teal);
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-family: 'DM Mono', monospace;
-  }
-
-  .save-indicator.show {
-    opacity: 1;
-  }
-
+:root {
+  --navy:         #0d1b2a;
+  --navy-mid:     #1a2f45;
+  --navy-light:   #243f5c;
+  --panel-bg:     #0b1724;
+  --row-even:     #0f1f2f;
+  --row-hover:    #162b40;
+  --input-bg:     #162b40;
+  --border:       #1e3a52;
+  --border-light: #254d6e;
+  --teal:         #00c9a7;
+  --teal-dim:     rgba(0,201,167,.18);
+  --teal-glow:    rgba(0,201,167,.08);
+  --sky:          #38bdf8;
+  --coral:        #ff6b6b;
+  --amber:        #f59e0b;
+  --green:        #34d399;
+  --orange:       #fb923c;
+  --indigo:       #818cf8;
+  --text-primary: #e8f4fd;
+  --text-second:  #7da8c5;
+  --text-muted:   #4a7a9b;
+  --drawer-w:     56vw;
+  --drawer-min:   760px;
+  --drawer-max:   1000px;
+}
+
+body[data-theme="light"] {
+  --navy:         #f5f7fa;
+  --navy-mid:     #e8ecf1;
+  --navy-light:   #dce2e9;
+  --panel-bg:     #ffffff;
+  --row-even:     #f8f9fb;
+  --row-hover:    #e8f0f8;
+  --input-bg:     #f5f7fa;
+  --border:       #d1dce6;
+  --border-light: #b8c9d9;
+  --teal:         #00a388;
+  --teal-dim:     rgba(0,163,136,.15);
+  --teal-glow:    rgba(0,163,136,.06);
+  --sky:          #0891d1;
+  --coral:        #dc3545;
+  --amber:        #d97706;
+  --green:        #059669;
+  --orange:       #ea580c;
+  --indigo:       #6366f1;
+  --text-primary: #1a2332;
+  --text-second:  #4a5d7a;
+  --text-muted:   #6b7f9c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text-primary);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── HEADER ───────────────────────────────────── */
+.header{flex-shrink:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--panel-bg);border-bottom:1px solid var(--border);z-index:60}
+.hd-left{display:flex;align-items:center;gap:12px;height:32px;flex:1;min-width:0}
+.hd-center{display:flex;align-items:center;justify-content:center;height:32px;position:absolute;left:50%;transform:translateX(-50%)}
+.hd-right{display:flex;align-items:center;gap:10px;height:32px;flex:1;min-width:0;justify-content:flex-end}
+.logo{font-size:24px;filter:drop-shadow(0 0 6px rgba(0,201,167,.5));animation:glow 2.4s ease-in-out infinite;line-height:1;display:flex;align-items:center}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 6px rgba(0,201,167,.5))}50%{filter:drop-shadow(0 0 16px rgba(0,201,167,.85))}}
+body[data-theme="light"] .logo{filter:drop-shadow(0 0 4px rgba(0,163,136,.4));animation:glow-light 2.4s ease-in-out infinite}
+@keyframes glow-light{0%,100%{filter:drop-shadow(0 0 4px rgba(0,163,136,.4))}50%{filter:drop-shadow(0 0 12px rgba(0,163,136,.7))}}
+
+.theme-toggle{
+  width:32px;height:32px;
+  background:var(--input-bg);
+  border:1px solid var(--border-light);
+  border-radius:7px;
+  color:var(--text-muted);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.theme-toggle:hover{
+  background:var(--navy-light);
+  color:var(--teal);
+  border-color:var(--teal);
+  transform:rotate(20deg);
+}
+.theme-toggle svg{transition:transform .2s}
+.theme-toggle:active{transform:scale(.95) rotate(20deg)}
+.hd-title{font-size:13px;font-weight:600;letter-spacing:.03em;line-height:1.2}
+.hd-sub{font-size:9px;color:var(--text-muted);letter-spacing:.09em;text-transform:uppercase;margin-top:2px;line-height:1}
+
+.tab-nav{display:flex;align-items:center;background:var(--navy-mid);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px;height:32px}
+.tab-btn{padding:6px 16px;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--text-muted);background:transparent}
+.tab-btn:hover{color:var(--text-second);background:var(--border)}
+.tab-btn.active{background:var(--teal);color:var(--navy);box-shadow:0 0 12px var(--teal-dim)}
+body[data-theme="light"] .tab-btn.active{color:#ffffff}
+
+.scale-toggle{display:flex;align-items:center;gap:3px;background:var(--navy-mid);border:1px solid var(--border);border-radius:9px;padding:3px;height:32px}
+.scale-btn{padding:6px 13px;border:none;border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .2s;color:var(--text-muted);background:transparent}
+.scale-btn:hover{color:var(--text-second);background:var(--border)}
+.scale-btn.active{background:var(--navy-light);color:var(--text-primary)}
+body[data-theme="light"] .scale-btn.active{background:var(--border);color:var(--text-primary)}
+
+.date-nav-control{display:flex;align-items:center;gap:4px;height:32px}
+.date-nav-btn{width:28px;height:32px;background:var(--input-bg);border:1px solid var(--border-light);border-radius:5px;color:var(--text-muted);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.date-nav-btn:hover{background:var(--border);color:var(--text-primary)}
+.date-input{font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.18);padding:9px 11px;border-radius:6px;height:32px;display:flex;align-items:center;cursor:pointer;transition:all .15s;min-width:130px}
+.date-input:hover{background:rgba(56,189,248,.12);border-color:rgba(56,189,248,.25)}
+.date-input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)}
+body[data-theme="light"] .date-input{color:#0891d1;background:rgba(8,145,209,.08);border:1px solid rgba(8,145,209,.2)}
+body[data-theme="light"] .date-input:hover{background:rgba(8,145,209,.12);border-color:rgba(8,145,209,.3)}
+
+/* ── APP BODY ─────────────────────────────────── */
+.app-body{flex:1;display:flex;overflow:hidden;position:relative}
+.tab-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
+.tab-panel.active{display:flex}
+
+/* ══════════════════════════════════════════════
+   GANTT TAB
+══════════════════════════════════════════════ */
+.gantt-wrapper{flex:1;display:flex;overflow:hidden}
+
+.left-panel{width:260px;flex-shrink:0;background:var(--panel-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:10}
+.col-header{height:46px;flex-shrink:0;display:flex;align-items:center;padding:0 16px;gap:8px;border-bottom:1px solid var(--border);background:var(--panel-bg)}
+.col-lbl{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.col-div{height:1px;flex:1;background:var(--border)}
+.left-rows{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+
+.provider-group-hdr{height:34px;display:flex;align-items:center;padding:0 16px;gap:8px;background:var(--navy-mid);border-bottom:1px solid var(--border);border-top:1px solid var(--border);position:sticky;top:0;z-index:4}
+.provider-group-hdr:first-child{border-top:none}
+.provider-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.provider-name-lbl{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}
+.provider-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-left:auto;background:var(--border);padding:2px 6px;border-radius:8px}
+
+.patient-row{height:52px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--border);transition:background .15s;gap:10px}
+.patient-row:hover{background:var(--row-hover)}
+.patient-row svg{transition:opacity .15s,color .15s}
+.patient-row svg:hover{opacity:1!important;color:var(--teal)!important}
+.patient-row:nth-child(even){background:var(--row-even)}
+.patient-row:nth-child(even):hover{background:var(--row-hover)}
+.p-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;letter-spacing:0}
+.p-info{min-width:0;flex:1}
+.p-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);transition:color .15s}
+.p-name:hover{color:var(--teal)}
+.p-appt-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:1px}
+
+.chart-area{flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.chart-inner{min-width:100%;position:relative}
+.time-header{height:46px;display:flex;align-items:stretch;background:var(--panel-bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
+.time-day{flex:1;min-width:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-right:1px solid var(--border)}
+.time-day.today{background:var(--teal-glow);border-right-color:rgba(0,201,167,.25)}
+.time-day.weekend{background:rgba(0,0,0,.15)}
+body[data-theme="light"] .time-day.weekend{background:rgba(0,0,0,.03)}
+.td-name{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.td-num{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text-second)}
+.time-day.today .td-name,.time-day.today .td-num{color:var(--teal)}
+.time-day.weekend .td-name,.time-day.weekend .td-num{color:var(--text-muted);opacity:.6}
+
+.chart-group-spacer{height:34px;background:var(--navy-mid);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px}
+.chart-group-spacer-line{flex:1;height:1px;background:var(--border)}
+
+.chart-row{height:52px;display:flex;align-items:center;border-bottom:1px solid var(--border);position:relative}
+.chart-cell{flex:1;height:100%;min-width:54px;border-right:1px solid var(--border);position:relative;cursor:pointer;transition:background .1s}
+.chart-cell:hover{background:rgba(0,201,167,.05)}
+.chart-cell:hover::after{content:'+ Click to add';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:var(--teal);font-weight:600;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;opacity:.7;pointer-events:none}
+.chart-cell.today-col{background:var(--teal-glow);border-right-color:rgba(0,201,167,.2)}
+.chart-cell.weekend-col{background:rgba(0,0,0,.1)}
+body[data-theme="light"] .chart-cell.weekend-col{background:rgba(0,0,0,.02)}
+.chart-cell.weekend-col:hover{background:rgba(0,201,167,.03)}
+.today-line{position:absolute;top:0;bottom:0;width:2px;background:var(--teal);box-shadow:0 0 8px var(--teal);z-index:4;pointer-events:none}
+
+.appt-bar{position:absolute;top:50%;transform:translateY(-50%);height:26px;border-radius:5px;cursor:pointer;display:flex;align-items:center;padding:0 8px 0 6px;font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;z-index:2;transition:all .16s ease;box-shadow:0 2px 8px rgba(0,0,0,.35);user-select:none;gap:5px}
+body[data-theme="light"] .appt-bar{box-shadow:0 2px 8px rgba(0,0,0,.15),0 1px 3px rgba(0,0,0,.1)}
+.appt-bar:hover{height:32px;box-shadow:0 4px 16px rgba(0,0,0,.5);z-index:3;outline:1px solid rgba(255,255,255,.2);outline-offset:0px}
+body[data-theme="light"] .appt-bar:hover{box-shadow:0 4px 16px rgba(0,0,0,.2),0 2px 8px rgba(0,0,0,.1);outline:1px solid rgba(0,0,0,.15)}
+.appt-bar.active{outline:2px solid rgba(255,255,255,.7);outline-offset:1px}
+body[data-theme="light"] .appt-bar.active{outline:2px solid rgba(0,0,0,.4);outline-offset:1px}
+.appt-bar.dragging{z-index:10;opacity:.85;cursor:move!important;transition:none}
+.appt-bar.dragging::before{content:attr(data-span);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--sky);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;border:1px solid var(--sky);white-space:nowrap;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+body[data-theme="light"] .appt-bar.dragging::before{background:var(--panel-bg);box-shadow:0 2px 8px rgba(0,0,0,.15),0 1px 3px rgba(0,0,0,.1)}
+.appt-bar.resizing{z-index:10;transition:none}
+.appt-bar.resizing::before{content:attr(data-span);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--teal);font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;border:1px solid var(--teal);white-space:nowrap;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+body[data-theme="light"] .appt-bar.resizing::before{background:var(--panel-bg);box-shadow:0 2px 8px rgba(0,0,0,.15),0 1px 3px rgba(0,0,0,.1)}
+.appt-bar.collision-blocked{outline:2px solid #ef4444!important;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateY(-50%) translateX(0)}25%{transform:translateY(-50%) translateX(-3px)}75%{transform:translateY(-50%) translateX(3px)}}
+.bar-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;pointer-events:none}
+.bar-days{font-size:9px;font-weight:700;padding:2px 5px;background:rgba(0,0,0,.15);border-radius:3px;margin-left:4px;flex-shrink:0;pointer-events:none}
+body[data-theme="light"] .bar-days{background:rgba(0,0,0,.1)}
+.bar-resize-handle{position:absolute;top:0;bottom:0;width:10px;z-index:5;opacity:0;transition:opacity .15s}
+.appt-bar:hover .bar-resize-handle{opacity:.6}
+.bar-resize-handle:hover{opacity:1!important}
+.bar-resize-left{left:0;cursor:ew-resize;padding-left:2px}
+.bar-resize-right{right:0;cursor:ew-resize;padding-right:2px}
+.bar-resize-handle::after{content:'';position:absolute;top:50%;transform:translateY(-50%);width:3px;height:16px;background:rgba(255,255,255,.9);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+body[data-theme="light"] .bar-resize-handle::after{background:rgba(0,0,0,.6);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bar-resize-left::after{left:3px}
+.bar-resize-right::after{right:3px}
+
+.bar-waiting-submit{background:rgba(74,122,155,.55);border-left:3px solid #4a7a9b;color:#c8dde8}
+.bar-submitted     {background:rgba(245,158,11,.55); border-left:3px solid var(--amber); color:#fde8a0}
+.bar-in-house      {background:rgba(56,189,248,.45); border-left:3px solid var(--sky);   color:#bce8ff}
+.bar-received      {background:rgba(251,146,60,.5);  border-left:3px solid var(--orange);color:#fddbb0}
+.bar-needs-approval{background:rgba(255,107,107,.45);border-left:3px solid var(--coral); color:#ffd0d0}
+.bar-ready-insert  {background:rgba(52,211,153,.5);  border-left:3px solid var(--green); color:#b0f5d8}
+.bar-delivered     {background:rgba(129,140,248,.4); border-left:3px solid var(--indigo);color:#d8dcff}
+
+body[data-theme="light"] .bar-waiting-submit{background:rgba(107,140,171,.35);border-left:3px solid #5a7a9b;color:#2d4a65}
+body[data-theme="light"] .bar-submitted     {background:rgba(217,119,6,.35); border-left:3px solid #d97706; color:#7c3e03}
+body[data-theme="light"] .bar-in-house      {background:rgba(8,145,209,.35); border-left:3px solid #0891d1; color:#054569}
+body[data-theme="light"] .bar-received      {background:rgba(234,88,12,.35); border-left:3px solid #ea580c; color:#7c2d06}
+body[data-theme="light"] .bar-needs-approval{background:rgba(220,53,69,.35); border-left:3px solid #dc3545; color:#7a1d26}
+body[data-theme="light"] .bar-ready-insert  {background:rgba(5,150,105,.35); border-left:3px solid #059669; color:#064e3b}
+body[data-theme="light"] .bar-delivered     {background:rgba(99,102,241,.35);border-left:3px solid #6366f1; color:#3730a3}
+
+/* ══════════════════════════════════════════════
+   AGENDA VIEW
+══════════════════════════════════════════════ */
+.agenda-outer{flex:1;display:flex;overflow:hidden}
+
+.agenda-scroll{flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+
+.agenda-grid{
+  display:grid;
+  /* columns set dynamically by JS */
+  min-width:100%;
+  position:relative;
+}
+
+/* Time gutter column */
+.ag-time-col{
+  width:64px;flex-shrink:0;
+  background:var(--panel-bg);
+  border-right:1px solid var(--border);
+  position:sticky;left:0;z-index:12;
+}
+.ag-time-header{
+  height:52px;background:var(--panel-bg);
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+  position:sticky;top:0;z-index:14;
+  display:flex;align-items:center;justify-content:center;
+}
+.ag-time-label-cell{
+  font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--text-muted);text-align:right;
+  padding:0 10px;
+  display:flex;align-items:flex-start;justify-content:flex-end;
+  position:relative;
+}
+.ag-time-label-cell::after{
+  content:'';position:absolute;right:0;top:0;bottom:0;
+  width:1px;background:var(--border);
+}
+
+/* Doctor column headers */
+.ag-doc-header{
+  height:52px;
+  background:var(--panel-bg);
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+  position:sticky;top:0;z-index:13;
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:0 14px;
+}
+.ag-doc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ag-doc-name{font-size:13px;font-weight:600;letter-spacing:.01em}
+.ag-doc-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);background:var(--border);padding:2px 6px;border-radius:8px;margin-left:2px}
+
+/* Hour rows */
+.ag-hour-row{
+  display:contents; /* children lay into grid */
+}
+
+.ag-hour-label{
+  font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--text-muted);
+  padding:0 10px;
+  display:flex;align-items:flex-start;justify-content:flex-end;
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+  background:var(--panel-bg);
+  position:sticky;left:0;z-index:8;
+  height:60px;
+  padding-top:6px;
+}
+
+.ag-doc-cell{
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  position:relative;
+  background:transparent;
+  height:60px;
+  transition:background .12s;
+}
+.ag-doc-cell:nth-child(odd){background:var(--row-even)}
+.ag-doc-cell:hover{background:var(--row-hover)}
+.ag-doc-cell.now-row{background:var(--teal-glow)}
+.ag-doc-cell.now-row:nth-child(odd){background:var(--teal-glow)}
+
+/* Now line inside the now-row cells */
+.ag-now-line{
+  position:absolute;left:0;right:0;height:2px;
+  background:var(--teal);box-shadow:0 0 6px var(--teal);
+  z-index:5;pointer-events:none;
+}
+
+/* Appointment card inside agenda */
+.ag-appt{
+  position:absolute;
+  left:4px;right:4px;
+  border-radius:6px;
+  padding:4px 8px;
+  cursor:pointer;
+  font-size:10px;font-weight:500;
+  overflow:hidden;
+  z-index:3;
+  transition:filter .15s, box-shadow .15s, z-index 0s;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;gap:1px;
+  user-select:none;
+}
+body[data-theme="light"] .ag-appt{box-shadow:0 2px 8px rgba(0,0,0,.15),0 1px 3px rgba(0,0,0,.1)}
+.ag-appt:hover{filter:brightness(1.15);box-shadow:0 4px 16px rgba(0,0,0,.55);z-index:6}
+body[data-theme="light"] .ag-appt:hover{filter:brightness(0.97);box-shadow:0 4px 16px rgba(0,0,0,.2),0 2px 8px rgba(0,0,0,.1)}
+.ag-appt.active{outline:2px solid rgba(255,255,255,.7);outline-offset:1px}
+body[data-theme="light"] .ag-appt.active{outline:2px solid rgba(0,0,0,.4);outline-offset:1px}
+.ag-appt-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.ag-appt-proc{font-size:9px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.ag-appt-badge{display:inline-flex;align-items:center;gap:3px;font-size:8px;font-weight:700;letter-spacing:.03em;margin-top:2px;opacity:.9}
+
+/* ══════════════════════════════════════════════
+   NEW CASE MODAL
+══════════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(4px);
+  z-index:95;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal-overlay.visible{display:flex}
+
+.new-case-modal{
+  width:480px;
+  background:var(--panel-bg);
+  border:1px solid var(--border-light);
+  border-radius:12px;
+  box-shadow:0 12px 40px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  opacity:0;
+  transform:scale(0.9) translateY(-20px);
+  transition:opacity .25s cubic-bezier(.4,0,.2,1),transform .25s cubic-bezier(.4,0,.2,1);
+}
+body[data-theme="light"] .new-case-modal{box-shadow:0 12px 40px rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.1)}
+.modal-overlay.visible .new-case-modal{opacity:1;transform:scale(1) translateY(0)}
+
+.ncm-header{
+  padding:18px 20px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.ncm-title{font-size:16px;font-weight:600;color:var(--text-primary)}
+.ncm-close{
+  width:28px;height:28px;
+  background:transparent;
+  border:1px solid var(--border-light);
+  border-radius:5px;
+  color:var(--text-muted);
+  font-size:13px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.ncm-close:hover{background:var(--border);color:var(--text-primary)}
+
+.ncm-body{
+  padding:16px 20px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.ncm-status-row{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.ncm-status-label{
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+.ncm-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ncm-row.single{grid-template-columns:1fr}
+
+.ncm-footer{
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+}
+.ncm-btn{
+  padding:10px 18px;
+  border-radius:7px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .15s;
+  border:none;
+}
+.ncm-btn-ghost{
+  background:transparent;
+  color:var(--text-second);
+  border:1px solid var(--border-light);
+}
+.ncm-btn-ghost:hover{background:var(--border);color:var(--text-primary)}
+.ncm-btn-primary{
+  background:var(--teal);
+  color:var(--navy);
+}
+.ncm-btn-primary:hover{background:#00ddb7}
+body[data-theme="light"] .ncm-btn-primary{color:#ffffff}
+body[data-theme="light"] .ncm-btn-primary:hover{background:#00b393}
+
+/* ══════════════════════════════════════════════
+   QUICK INFO BUBBLE
+══════════════════════════════════════════════ */
+.info-bubble{
+  position:fixed;
+  width:280px;
+  background:var(--panel-bg);
+  border:1px solid var(--border-light);
+  border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.2);
+  z-index:90;
+  opacity:0;
+  pointer-events:none;
+  transform:scale(0.92) translateY(-4px);
+  transition:opacity .2s cubic-bezier(.4,0,.2,1),transform .2s cubic-bezier(.4,0,.2,1);
+}
+body[data-theme="light"] .info-bubble{box-shadow:0 8px 24px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.08)}
+.info-bubble.visible{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+
+.ib-header{
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.ib-avatar{
+  width:32px;height:32px;
+  border-radius:50%;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;
+}
+.ib-patient-info{flex:1;min-width:0}
+.ib-name{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1.3}
+.ib-procedure{font-size:10px;color:var(--text-muted);margin-top:2px;font-family:'DM Mono',monospace}
+.ib-close{
+  width:24px;height:24px;flex-shrink:0;
+  background:transparent;
+  border:1px solid var(--border-light);
+  border-radius:5px;
+  color:var(--text-muted);
+  font-size:12px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.ib-close:hover{background:var(--border);color:var(--text-primary)}
+
+.ib-body{padding:10px 14px 12px;max-height:320px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.ib-row{
+  display:flex;
+  padding:6px 0;
+  border-bottom:1px solid var(--border);
+  gap:10px;
+}
+.ib-row:last-child{border-bottom:none;padding-bottom:0}
+.ib-row:first-child{padding-top:0}
+.ib-label{
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  width:90px;
+  flex-shrink:0;
+  padding-top:1px;
+}
+.ib-value{
+  font-size:12px;
+  color:var(--text-primary);
+  flex:1;
+  min-width:0;
+  line-height:1.4;
+}
+.ib-value-muted{color:var(--text-second);font-size:11px}
+.ib-value .badge{font-size:9px;padding:3px 8px}
+
+.ib-footer{
+  padding:10px 14px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:8px;
+}
+.ib-btn{
+  flex:1;
+  padding:8px 14px;
+  border-radius:6px;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .15s;
+  border:none;
+}
+.ib-btn-primary{
+  background:var(--teal);
+  color:var(--navy);
+}
+.ib-btn-primary:hover{background:#00ddb7}
+body[data-theme="light"] .ib-btn-primary{color:#ffffff}
+body[data-theme="light"] .ib-btn-primary:hover{background:#00b393}
+
+/* Arrow pointer for bubble */
+.ib-arrow{
+  position:absolute;
+  width:0;height:0;
+  border:8px solid transparent;
+  pointer-events:none;
+}
+.ib-arrow.top{
+  bottom:100%;left:50%;
+  transform:translateX(-50%);
+  border-bottom-color:var(--border-light);
+}
+.ib-arrow.top::after{
+  content:'';position:absolute;
+  bottom:-7px;left:-7px;
+  border:7px solid transparent;
+  border-bottom-color:var(--panel-bg);
+}
+.ib-arrow.bottom{
+  top:100%;left:50%;
+  transform:translateX(-50%);
+  border-top-color:var(--border-light);
+}
+.ib-arrow.bottom::after{
+  content:'';position:absolute;
+  top:-7px;left:-7px;
+  border:7px solid transparent;
+  border-top-color:var(--panel-bg);
+}
+.ib-arrow.left{
+  right:100%;top:50%;
+  transform:translateY(-50%);
+  border-right-color:var(--border-light);
+}
+.ib-arrow.left::after{
+  content:'';position:absolute;
+  right:-7px;top:-7px;
+  border:7px solid transparent;
+  border-right-color:var(--panel-bg);
+}
+.ib-arrow.right{
+  left:100%;top:50%;
+  transform:translateY(-50%);
+  border-left-color:var(--border-light);
+}
+.ib-arrow.right::after{
+  content:'';position:absolute;
+  left:-7px;top:-7px;
+  border:7px solid transparent;
+  border-left-color:var(--panel-bg);
+}
+
+/* ══════════════════════════════════════════════
+   RIGHT DRAWER (shared)
+══════════════════════════════════════════════ */
+.drawer-backdrop{
+  display:none; /* Hidden - users can interact with both panels */
+}
+
+.drawer{position:fixed;top:56px;right:0;bottom:0;width:min(max(var(--drawer-w),var(--drawer-min)),var(--drawer-max));background:var(--panel-bg);border-left:2px solid var(--border-light);display:flex;flex-direction:column;z-index:80;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:-12px 0 40px rgba(0,0,0,.4),-4px 0 16px rgba(0,0,0,.3)}
+body[data-theme="light"] .drawer{box-shadow:-12px 0 40px rgba(0,0,0,.1),-4px 0 16px rgba(0,0,0,.06)}
+.drawer.open{transform:translateX(0)}
+.drawer-header{flex-shrink:0;padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.drawer-title-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.drawer-patient-info{display:flex;align-items:center;gap:6px;flex:1;min-width:0}
+.drawer-header-right{display:flex;align-items:center;gap:6px}
+.d-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.d-name{font-size:12px;font-weight:600;line-height:1.3;background:transparent;border:none;color:var(--text-primary);width:100%;padding:2px 4px;border-radius:4px;transition:background .15s}
+.d-name:hover{background:var(--input-bg)}
+.d-name:focus{outline:none;background:var(--input-bg);box-shadow:0 0 0 2px var(--teal-dim)}
+.d-procedure{font-size:9px;color:var(--text-muted);margin-top:1px;font-family:'DM Mono',monospace;letter-spacing:.04em}
+.close-drawer{width:24px;height:24px;flex-shrink:0;background:transparent;border:1px solid var(--border-light);border-radius:5px;color:var(--text-muted);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.close-drawer:hover{background:var(--border);color:var(--text-primary)}
+.drawer-badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:14px;font-size:8px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;border:1px solid transparent}
+.b-waiting-submit{background:rgba(74,122,155,.15);color:#7da8c5;border-color:rgba(74,122,155,.25)}
+.b-submitted     {background:rgba(245,158,11,.12); color:var(--amber); border-color:rgba(245,158,11,.22)}
+.b-in-house      {background:rgba(56,189,248,.12); color:var(--sky);   border-color:rgba(56,189,248,.2)}
+.b-received      {background:rgba(251,146,60,.12); color:var(--orange);border-color:rgba(251,146,60,.2)}
+.b-needs-approval{background:rgba(255,107,107,.1); color:var(--coral); border-color:rgba(255,107,107,.18)}
+.b-ready-insert  {background:rgba(52,211,153,.12); color:var(--green); border-color:rgba(52,211,153,.2)}
+.b-delivered     {background:rgba(129,140,248,.1); color:var(--indigo);border-color:rgba(129,140,248,.18)}
+.b-high  {background:rgba(255,107,107,.12);color:var(--coral);border-color:rgba(255,107,107,.2)}
+.b-normal{background:rgba(74,122,155,.1); color:var(--text-muted);border-color:rgba(74,122,155,.15)}
+
+body[data-theme="light"] .b-waiting-submit{background:rgba(107,140,171,.15);color:#5a7a9b;border-color:rgba(107,140,171,.3)}
+body[data-theme="light"] .b-submitted     {background:rgba(217,119,6,.12); color:#b45309; border-color:rgba(217,119,6,.25)}
+body[data-theme="light"] .b-in-house      {background:rgba(8,145,209,.12); color:#0369a1; border-color:rgba(8,145,209,.25)}
+body[data-theme="light"] .b-received      {background:rgba(234,88,12,.12); color:#c2410c; border-color:rgba(234,88,12,.25)}
+body[data-theme="light"] .b-needs-approval{background:rgba(220,53,69,.12); color:#b91c1c; border-color:rgba(220,53,69,.25)}
+body[data-theme="light"] .b-ready-insert  {background:rgba(5,150,105,.12); color:#047857; border-color:rgba(5,150,105,.25)}
+body[data-theme="light"] .b-delivered     {background:rgba(99,102,241,.12);color:#4f46e5; border-color:rgba(99,102,241,.25)}
+body[data-theme="light"] .b-high  {background:rgba(220,53,69,.15);color:#b91c1c;border-color:rgba(220,53,69,.25)}
+body[data-theme="light"] .b-normal{background:rgba(107,140,171,.1); color:#5a7a9b;border-color:rgba(107,140,171,.2)}
+
+.drawer-body{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.d-section{padding:20px 0;border-bottom:1px solid var(--border)}
+.d-section:first-child{padding-top:0}
+.d-section:last-child{border-bottom:none;padding-bottom:0}
+.s-lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);margin-bottom:16px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:2px solid var(--teal)}
+.s-lbl::after{content:'';flex:1;height:0}
+body[data-theme="light"] .s-lbl{color:#0a8f88;border-bottom-color:#0a8f88}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.f-row.single{grid-template-columns:1fr}
+.f-row.triple{grid-template-columns:1fr 1fr 1fr}
+.f-row:last-child{margin-bottom:0}
+.f-grp{display:flex;flex-direction:column;gap:7px}
+.f-grp-placeholder{visibility:hidden}
+.f-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.f-inp{background:var(--input-bg);border:1px solid var(--border-light);border-radius:5px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-primary);transition:border-color .15s,box-shadow .15s;width:100%}
+.f-inp:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)}
+select.f-inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a7a9b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+textarea.f-inp{resize:vertical;min-height:80px;line-height:1.5}
+
+.checkbox-label{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;padding:8px 0}
+.checkbox-input{position:absolute;opacity:0;pointer-events:none}
+.checkbox-custom{width:20px;height:20px;border:2px solid var(--border-light);border-radius:4px;background:var(--input-bg);transition:all .15s;position:relative;flex-shrink:0}
+.checkbox-input:checked + .checkbox-custom{background:var(--teal);border-color:var(--teal)}
+.checkbox-input:checked + .checkbox-custom::after{content:'';position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.checkbox-label:hover .checkbox-custom{border-color:var(--teal)}
+.checkbox-text{font-size:11px;font-weight:500;color:var(--text-primary)}
+
+.status-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.s-chip{padding:5px 10px;border-radius:10px;font-size:9px;font-weight:700;letter-spacing:.05em;cursor:pointer;border:1px solid transparent;transition:all .15s;text-transform:uppercase}
+.s-chip.picked{outline:2px solid rgba(255,255,255,.3);outline-offset:1px}
+body[data-theme="light"] .s-chip.picked{outline:2px solid rgba(0,0,0,.25);outline-offset:1px}
+
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--input-bg);border:1px solid var(--border-light);border-radius:6px;cursor:pointer;user-select:none;transition:border-color .15s}
+.tog-row:hover{border-color:var(--teal)}
+.tog-lbl{font-size:11px;color:var(--text-primary)}
+.tog-sw{width:32px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background .2s;flex-shrink:0}
+.tog-sw::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-muted);transition:all .2s}
+.tog-sw.on{background:var(--teal)}
+.tog-sw.on::after{left:16px;background:var(--navy)}
+body[data-theme="light"] .tog-sw.on::after{background:#ffffff}
+
+.sub-field{display:none;margin-top:8px}
+.sub-field.vis{display:block}
+.archive-notice{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:rgba(0,201,167,.07);border:1px solid rgba(0,201,167,.14);border-radius:7px;font-size:11px;color:var(--text-second);line-height:1.5;margin-top:8px}
+body[data-theme="light"] .archive-notice{background:rgba(0,163,136,.08);border:1px solid rgba(0,163,136,.2)}
+
+.drawer-footer{flex-shrink:0;padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel-bg)}
+.btn{padding:7px 14px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .18s}
+.btn-primary{background:var(--teal);color:var(--navy);box-shadow:0 0 12px var(--teal-dim)}
+.btn-primary:hover{background:#00ddb7}
+body[data-theme="light"] .btn-primary{color:#ffffff}
+body[data-theme="light"] .btn-primary:hover{background:#00b393}
+.btn-ghost{background:transparent;color:var(--text-second);border:1px solid var(--border-light)}
+.btn-ghost:hover{background:var(--border);color:var(--text-primary)}
+.btn-danger{background:transparent;color:var(--coral);border:1px solid rgba(255,107,107,.2);font-size:11px;padding:6px 11px}
+.btn-danger:hover{background:rgba(255,107,107,.08)}
+body[data-theme="light"] .btn-danger{color:#dc3545;border:1px solid rgba(220,53,69,.3)}
+body[data-theme="light"] .btn-danger:hover{background:rgba(220,53,69,.08)}
+.save-flash{font-size:9px;color:var(--teal);opacity:0;transition:opacity .3s;font-family:'DM Mono',monospace;letter-spacing:.05em}
+.save-flash.show{opacity:1}
+
+/* ══════════════════════════════════════════════
+   HUDDLE TAB
+══════════════════════════════════════════════ */
+.huddle-body{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;align-content:start}
+.huddle-card{background:var(--panel-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.huddle-card-header{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.huddle-card-icon{font-size:18px}
+.huddle-card-title{font-size:13px;font-weight:600}
+.huddle-card-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.huddle-stat{font-size:28px;font-weight:600;letter-spacing:-.01em;padding:12px 18px 4px;line-height:1}
+.huddle-list{padding:0 18px 14px;display:flex;flex-direction:column}
+.huddle-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px}
+.huddle-item:last-child{border-bottom:none}
+.hi-name{font-size:12px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.hi-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
+.legend-wrap{padding:12px 18px;display:flex;flex-direction:column;gap:7px}
+.legend-item{display:flex;align-items:center;gap:8px}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.legend-label{font-size:11px;color:var(--text-second)}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-left">
-    <div class="logo-dot"></div>
+  <!-- LEFT: Logo and Title -->
+  <div class="hd-left">
+    <div class="logo">🦷</div>
     <div>
-      <div class="header-title">Patient Scheduling</div>
-      <div class="header-sub">Gantt View — Clinic Schedule</div>
+      <div class="hd-title">Springfield Dental Complex</div>
+      <div class="hd-sub">Lab Case Tracker</div>
     </div>
   </div>
 
-  <div class="toggle-group">
-    <button class="toggle-btn active" data-weeks="1" onclick="setScale(1)">1 Week</button>
-    <button class="toggle-btn" data-weeks="2" onclick="setScale(2)">2 Weeks</button>
-    <button class="toggle-btn" data-weeks="4" onclick="setScale(4)">4 Weeks</button>
+  <!-- CENTER: Tab Navigation -->
+  <div class="hd-center">
+    <div class="tab-nav">
+      <button class="tab-btn active"  onclick="switchTab('gantt')">📅 Schedule</button>
+      <button class="tab-btn"         onclick="switchTab('agenda')">🗓 Agenda</button>
+      <button class="tab-btn"         onclick="switchTab('huddle')">📋 Huddle</button>
+    </div>
   </div>
 
-  <div class="header-meta">
-    <div class="date-badge" id="currentDate"></div>
+  <!-- RIGHT: Controls -->
+  <div class="hd-right">
+    <button class="btn btn-primary" onclick="createNewCase()" style="padding:6px 14px;font-size:11px;height:32px">+ New Case</button>
+    <div class="scale-toggle" id="scaleToggle">
+      <button class="scale-btn active" data-days="7"  onclick="setScale(7)">1 Wk</button>
+      <button class="scale-btn"        data-days="14" onclick="setScale(14)">2 Wk</button>
+    </div>
+    <div class="date-nav-control">
+      <button class="date-nav-btn" onclick="changeViewDate(-1)" title="Previous day">◀</button>
+      <input type="date" class="date-input" id="viewDateInput" onchange="setViewDate(this.value)" />
+      <button class="date-nav-btn" onclick="changeViewDate(1)" title="Next day">▶</button>
+    </div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 1v2M8 13v2M15 8h-2M3 8H1M13.657 2.343l-1.414 1.414M3.757 12.243l-1.414 1.414M13.657 13.657l-1.414-1.414M3.757 3.757L2.343 2.343"/>
+        <circle cx="8" cy="8" r="3"/>
+      </svg>
+    </button>
   </div>
 </div>
 
-<!-- GANTT WRAPPER -->
-<div class="gantt-wrapper">
-  <div class="gantt-container">
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-      <div class="left-header">
-        <span class="left-header-label">Patient</span>
-        <div class="divider-line"></div>
-      </div>
-      <div class="left-rows" id="leftRows"></div>
-    </div>
+<!-- APP BODY -->
+<div class="app-body">
 
-    <!-- CHART AREA -->
-    <div class="chart-area" id="chartArea">
-      <div class="chart-inner" id="chartInner">
-        <div class="time-header" id="timeHeader"></div>
-        <div class="chart-rows" id="chartRows"></div>
-        <div class="today-line" id="todayLine"></div>
+  <!-- ════════ SCHEDULE TAB ════════ -->
+  <div class="tab-panel active" id="tab-gantt">
+    <div class="gantt-wrapper" id="ganttWrapper">
+      <div class="left-panel">
+        <div class="col-header">
+          <span class="col-lbl">Patient</span>
+          <div class="col-div"></div>
+        </div>
+        <div class="left-rows" id="leftRows"></div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- DETAIL OVERLAY -->
-<div class="detail-overlay" id="detailOverlay">
-  <div class="detail-panel">
-    <div class="detail-header">
-      <div class="detail-header-left">
-        <div class="detail-avatar" id="detailAvatar"></div>
-        <div>
-          <div class="detail-name" id="detailName"></div>
-          <div class="detail-type" id="detailType"></div>
+      <div class="chart-area" id="chartArea">
+        <div class="chart-inner">
+          <div class="time-header" id="timeHeader"></div>
+          <div class="chart-rows"  id="chartRows"></div>
+          <div class="today-line"  id="todayLine"></div>
         </div>
       </div>
-      <button class="close-btn" onclick="closeDetail()">✕</button>
     </div>
-    <div class="detail-body">
-      <div class="field-group">
-        <div class="field-label">Patient Name</div>
-        <input class="field-input" type="text" id="editName" />
-      </div>
-      <div class="field-group">
-        <div class="field-label">Appointment Date</div>
-        <input class="field-input" type="date" id="editDate" />
-      </div>
-      <div class="field-group">
-        <div class="field-label">Start Time</div>
-        <input class="field-input" type="time" id="editStart" />
-      </div>
-      <div class="field-group">
-        <div class="field-label">Duration</div>
-        <select class="field-input" id="editDuration">
-          <option value="30">30 minutes</option>
-          <option value="60">1 hour</option>
-          <option value="90">1.5 hours</option>
-          <option value="120">2 hours</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Status</div>
-        <select class="field-input" id="editStatus">
-          <option value="confirmed">Confirmed</option>
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Appointment Type</div>
-        <select class="field-input" id="editType">
-          <option>Initial Consultation</option>
-          <option>Follow-up</option>
-          <option>Lab Review</option>
-          <option>Physical Exam</option>
-          <option>Imaging</option>
-          <option>Procedure</option>
-          <option>Telehealth</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Assigned Provider</div>
-        <input class="field-input" type="text" id="editProvider" />
-      </div>
-      <div class="field-group">
-        <div class="field-label">Room / Location</div>
-        <input class="field-input" type="text" id="editRoom" />
-      </div>
-      <div class="field-group full-width">
-        <div class="field-label">Clinical Notes</div>
-        <textarea class="field-input" id="editNotes" placeholder="Enter notes, instructions, or flags…"></textarea>
-      </div>
-    </div>
-    <div class="detail-footer">
-      <button class="btn btn-danger" onclick="deleteAppointment()">Remove Appointment</button>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="save-indicator" id="saveIndicator">✓ Saved</span>
-        <button class="btn btn-ghost" onclick="closeDetail()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveDetail()">Save Changes</button>
+  </div>
+
+  <!-- ════════ AGENDA TAB ════════ -->
+  <div class="tab-panel" id="tab-agenda">
+    <div class="agenda-outer" id="agendaOuter">
+      <div class="agenda-scroll" id="agendaScroll">
+        <div class="agenda-grid" id="agendaGrid"></div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- ════════ HUDDLE TAB ════════ -->
+  <div class="tab-panel" id="tab-huddle">
+    <div class="huddle-body" id="huddleBody"></div>
+  </div>
+
+  <!-- ════════ NEW CASE MODAL ════════ -->
+  <div class="modal-overlay" id="newCaseOverlay" onclick="closeNewCaseModal(event)">
+    <div class="new-case-modal" onclick="event.stopPropagation()">
+      <div class="ncm-header">
+        <div class="ncm-title">Add New Case</div>
+        <button class="ncm-close" onclick="closeNewCaseModal()">✕</button>
+      </div>
+      
+      <div class="ncm-body">
+        <!-- Status chips at top -->
+        <div class="ncm-status-row">
+          <div class="ncm-status-label">Status</div>
+          <div class="status-chips" id="ncmStatusChips"></div>
+        </div>
+        
+        <!-- Patient name -->
+        <div class="ncm-row single">
+          <div class="f-grp">
+            <div class="f-lbl">Patient Name *</div>
+            <input class="f-inp" type="text" id="ncmName" placeholder="Enter patient name" required/>
+          </div>
+        </div>
+        
+        <!-- Dentist and Assistant -->
+        <div class="ncm-row">
+          <div class="f-grp">
+            <div class="f-lbl">Treating Dentist *</div>
+            <select class="f-inp" id="ncmDentist" required>
+              <option value="Dr. Novak">Dr. Novak</option>
+              <option value="Dr. Reyes">Dr. Reyes</option>
+              <option value="Dr. Osei">Dr. Osei</option>
+            </select>
+          </div>
+          <div class="f-grp">
+            <div class="f-lbl">Assistant</div>
+            <select class="f-inp" id="ncmAssistant">
+              <option value="">—</option>
+              <option value="Sarah K.">Sarah K.</option>
+              <option value="Mike R.">Mike R.</option>
+              <option value="Jamie L.">Jamie L.</option>
+              <option value="Tom B.">Tom B.</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Appointment date and time -->
+        <div class="ncm-row">
+          <div class="f-grp">
+            <div class="f-lbl">Appointment Date *</div>
+            <input class="f-inp" type="date" id="ncmDate" required/>
+          </div>
+          <div class="f-grp">
+            <div class="f-lbl">Time</div>
+            <input class="f-inp" type="time" id="ncmTime" placeholder="Optional"/>
+          </div>
+        </div>
+        
+        <!-- Procedure and Duration -->
+        <div class="ncm-row">
+          <div class="f-grp">
+            <div class="f-lbl">Procedure Type</div>
+            <select class="f-inp" id="ncmProcedure">
+              <optgroup label="Fixed Prosthodontics">
+                <option selected>Crown (PFM)</option>
+                <option>Crown (Full Zirconia)</option>
+                <option>Crown (E.max / All-Ceramic)</option>
+                <option>FPD / Bridge (3-unit)</option>
+                <option>Implant Crown</option>
+                <option>Veneer</option>
+              </optgroup>
+              <optgroup label="Removable">
+                <option>Complete Denture (Upper)</option>
+                <option>Partial Denture (RPD)</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Diagnostic Wax-Up</option>
+                <option>Occlusal Guard (Hard)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="f-grp">
+            <div class="f-lbl">Duration</div>
+            <select class="f-inp" id="ncmDuration">
+              <option value="30">30 min</option>
+              <option value="60" selected>60 min</option>
+              <option value="90">90 min</option>
+              <option value="120">120 min</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="ncm-footer">
+        <button class="ncm-btn ncm-btn-ghost" onclick="closeNewCaseModal()">Cancel</button>
+        <button class="ncm-btn ncm-btn-primary" onclick="createNewCaseFromModal()">Create Case</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ QUICK INFO BUBBLE ════════ -->
+  <div class="info-bubble" id="infoBubble">
+    <div class="ib-arrow" id="ibArrow"></div>
+    <div class="ib-header">
+      <div class="ib-avatar" id="ibAvatar"></div>
+      <div class="ib-patient-info">
+        <div class="ib-name" id="ibName">—</div>
+        <div class="ib-procedure" id="ibProcedure">—</div>
+      </div>
+      <button class="ib-close" onclick="event.stopPropagation(); closeInfoBubble()">✕</button>
+    </div>
+    <div class="ib-body" id="ibBody"></div>
+    <div class="ib-footer">
+      <button class="ib-btn ib-btn-primary" onclick="event.stopPropagation(); editFromBubble()">Edit Details</button>
+    </div>
+  </div>
+
+  <!-- ════════ SHARED RIGHT DRAWER ════════ -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-row">
+        <div class="drawer-patient-info">
+          <div class="d-avatar"   id="dAvatar"></div>
+          <div style="flex:1;min-width:0">
+            <input class="d-name" type="text" id="dName" placeholder="Patient Name" />
+            <div class="d-procedure" id="dProcedure">—</div>
+          </div>
+        </div>
+        <div class="drawer-header-right">
+          <div class="drawer-badges" id="dBadges"></div>
+          <button class="close-drawer" onclick="closeDrawer()">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Status at top -->
+      <div class="d-section">
+        <div class="s-lbl">Case Status</div>
+        <div class="f-grp" style="margin-bottom:10px">
+          <div class="f-lbl">Status</div>
+          <div class="status-chips" id="statusChips"></div>
+          <div class="sub-field" id="waitReasonWrap">
+            <select class="f-inp" id="eWaitReason">
+              <option value="">Select reason…</option>
+              <option>Waiting — shade confirmation needed</option>
+              <option>Waiting — insurance approval</option>
+              <option>Waiting — patient to confirm date</option>
+              <option>Waiting — provider decision</option>
+              <option>Waiting — pre-med clearance</option>
+              <option>Waiting — other</option>
+            </select>
+          </div>
+        </div>
+        <input type="hidden" id="eStatus" value="waiting-submit"/>
+        <input type="hidden" id="eArchive" value="14"/>
+        <input type="hidden" id="eCaseReturned" value="false"/>
+        <input type="hidden" id="eRoom" value=""/>
+        <div class="f-row">
+          <div class="f-grp">
+            <div class="f-lbl">Priority</div>
+            <select class="f-inp" id="ePriority">
+              <option value="normal">Normal</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="f-grp">
+            <div class="f-lbl">Needs Review</div>
+            <select class="f-inp" id="eReview">
+              <option value="none">None needed</option>
+              <option value="approval">Needs Approval</option>
+              <option value="adjustment">Needs Adjustment</option>
+              <option value="try-in">Needs Try-in / Check</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-section">
+        <div class="s-lbl">Patient &amp; Provider</div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Patient Name</div><input class="f-inp" type="text" id="eName"/></div>
+          <div class="f-grp"><div class="f-lbl">Treating Dentist</div>
+            <select class="f-inp" id="eDentist">
+              <option value="Dr. Novak">Dr. Novak</option>
+              <option value="Dr. Reyes">Dr. Reyes</option>
+              <option value="Dr. Osei">Dr. Osei</option>
+            </select>
+          </div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Treating Assistant</div>
+            <select class="f-inp" id="eAssistant">
+              <option value="">—</option>
+              <option value="Sarah K.">Sarah K.</option>
+              <option value="Mike R.">Mike R.</option>
+              <option value="Jamie L.">Jamie L.</option>
+              <option value="Tom B.">Tom B.</option>
+            </select>
+          </div>
+          <div class="f-grp-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="d-section">
+        <div class="s-lbl">Dates &amp; Time</div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Date Submitted</div><input class="f-inp" type="date" id="eDateSubmitted"/></div>
+          <div class="f-grp"><div class="f-lbl">Patient Appt Date</div><input class="f-inp" type="date" id="eDateScheduled"/></div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Appointment Time</div><input class="f-inp" type="time" id="eApptTime"/></div>
+          <div class="f-grp"><div class="f-lbl">Duration</div>
+            <select class="f-inp" id="eDuration">
+              <option value="30">30 min</option>
+              <option value="60">60 min</option>
+              <option value="90">90 min</option>
+              <option value="120">120 min</option>
+            </select>
+          </div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Follow-up Date</div><input class="f-inp" type="date" id="eFollowUpDate"/></div>
+          <div class="f-grp-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="d-section">
+        <div class="s-lbl">Procedure Details</div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Procedure Type</div>
+            <select class="f-inp" id="eProcedure">
+              <optgroup label="Fixed Prosthodontics">
+                <option>Crown (PFM)</option><option>Crown (Full Zirconia)</option>
+                <option>Crown (E.max / All-Ceramic)</option><option>FPD / Bridge (3-unit)</option>
+                <option>FPD / Bridge (4+ unit)</option><option>Implant Crown</option>
+                <option>Implant Bridge</option><option>Inlay / Onlay</option><option>Veneer</option>
+              </optgroup>
+              <optgroup label="Removable Prosthodontics">
+                <option>Complete Denture (Upper)</option><option>Complete Denture (Lower)</option>
+                <option>Partial Denture (RPD)</option><option>Immediate Denture</option>
+                <option>Denture Reline / Repair</option>
+              </optgroup>
+              <optgroup label="Occlusal / Appliances">
+                <option>Occlusal Guard (Hard)</option><option>Occlusal Guard (Soft)</option>
+                <option>Sleep Appliance / MAD</option><option>Bleaching Trays</option>
+                <option>Retainer (Hawley)</option><option>Retainer (Clear / Essix)</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Diagnostic Wax-Up</option><option>Custom Tray</option><option>Other</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="f-grp"><div class="f-lbl">Shade</div><input class="f-inp" type="text" id="eShade" placeholder="e.g. A2, BL2"/></div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp"><div class="f-lbl">Scanner / Impression</div>
+            <select class="f-inp" id="eScanner">
+              <option value="">—</option><option>iTero</option><option>3Shape TRIOS</option>
+              <option>Cerec Omnicam</option><option>Medit i500</option>
+              <option>PVS Impression</option><option>Polyether Impression</option><option>Other</option>
+            </select>
+          </div>
+          <div class="f-grp-placeholder"></div>
+        </div>
+        <div class="f-row">
+          <div class="f-grp">
+            <label class="checkbox-label">
+              <input type="checkbox" id="eFabricationNeeded" class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">Fabrication Needed</span>
+            </label>
+          </div>
+          <div class="f-grp-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="d-section">
+        <div class="s-lbl">Clinical Notes</div>
+        <div class="f-row single">
+          <div class="f-grp">
+            <div class="f-lbl">Notes</div>
+            <textarea class="f-inp" id="eNotes" placeholder="Shade, contacts, instructions…" style="min-height:60px"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn btn-danger"   onclick="deleteCase()">Remove Case</button>
+      <div style="display:flex;align-items:center;gap:7px">
+        <span class="save-flash" id="saveFlash">✓ Saved</span>
+        <button class="btn btn-ghost"   onclick="closeDrawer()">Discard</button>
+        <button class="btn btn-primary" onclick="saveCase()">Save Changes</button>
+      </div>
+    </div>
+  </div><!-- /drawer -->
+
+</div><!-- /app-body -->
 
 <script>
-// ── DATA ─────────────────────────────────────────────────────────────────────
-const avatarColors = [
+// ═══════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════
+const PALETTE = [
   ['#00c9a7','#0d2e26'],['#38bdf8','#0d2035'],['#a78bfa','#1e1435'],
   ['#f472b6','#2e1325'],['#f59e0b','#2e2106'],['#6ee7b7','#0d2e22'],
   ['#fb923c','#2e1806'],['#818cf8','#151d3a'],['#34d399','#0d2e1f'],
   ['#e879f9','#2e1035']
 ];
+const PROVIDER_COLORS = {'Dr. Novak':'#00c9a7','Dr. Reyes':'#38bdf8','Dr. Osei':'#a78bfa'};
+const STATUS_CFG = {
+  'waiting-submit':{ cls:'b-waiting-submit',barCls:'bar-waiting-submit',icon:'◌',label:'Waiting to Submit',agColor:['rgba(74,122,155,.55)','#4a7a9b','#c8dde8'] },
+  'submitted':     { cls:'b-submitted',     barCls:'bar-submitted',     icon:'✈',label:'Submitted to Lab', agColor:['rgba(245,158,11,.55)','#f59e0b','#fde8a0'] },
+  'in-house':      { cls:'b-in-house',      barCls:'bar-in-house',      icon:'🔧',label:'In-House Fab',     agColor:['rgba(56,189,248,.45)', '#38bdf8','#bce8ff'] },
+  'received':      { cls:'b-received',      barCls:'bar-received',      icon:'📦',label:'Received',         agColor:['rgba(251,146,60,.5)',  '#fb923c','#fddbb0'] },
+  'needs-approval':{ cls:'b-needs-approval',barCls:'bar-needs-approval',icon:'⚠', label:'Needs Approval',  agColor:['rgba(255,107,107,.45)','#ff6b6b','#ffd0d0'] },
+  'ready-insert':  { cls:'b-ready-insert',  barCls:'bar-ready-insert',  icon:'✅',label:'Ready for Insert', agColor:['rgba(52,211,153,.5)',  '#34d399','#b0f5d8'] },
+  'delivered':     { cls:'b-delivered',     barCls:'bar-delivered',     icon:'✓', label:'Delivered',        agColor:['rgba(129,140,248,.4)', '#818cf8','#d8dcff'] },
+};
 
-const today = new Date();
-today.setHours(0, 0, 0, 0);
+// Procedure type color mapping
+const PROCEDURE_COLORS = {
+  'crown': { bg: 'rgba(245,158,11,.20)', border: '#f59e0b', text: '#f59e0b' },         // Gold/Amber - Crowns
+  'bridge': { bg: 'rgba(59,130,246,.20)', border: '#3b82f6', text: '#3b82f6' },        // Blue - Bridges/FPD
+  'implant': { bg: 'rgba(168,85,247,.20)', border: '#a855f7', text: '#a855f7' },       // Purple - Implants
+  'denture': { bg: 'rgba(236,72,153,.20)', border: '#ec4899', text: '#ec4899' },       // Rose - Dentures
+  'guard': { bg: 'rgba(16,185,129,.20)', border: '#10b981', text: '#10b981' },         // Green - Guards/Appliances
+  'veneer': { bg: 'rgba(20,184,166,.20)', border: '#14b8a6', text: '#14b8a6' },        // Teal - Veneers/Cosmetic
+  'other': { bg: 'rgba(107,114,128,.20)', border: '#6b7280', text: '#6b7280' }         // Gray - Diagnostic/Other
+};
 
-function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
-function fmtDate(d) { return d.toISOString().split('T')[0]; }
-function initials(n) { return n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2); }
+// Map procedure name to color category
+function getProcedureColor(procedureName) {
+  const proc = procedureName.toLowerCase();
+  if (proc.includes('crown') && !proc.includes('implant')) return PROCEDURE_COLORS.crown;
+  if (proc.includes('bridge') || proc.includes('fpd')) return PROCEDURE_COLORS.bridge;
+  if (proc.includes('implant')) return PROCEDURE_COLORS.implant;
+  if (proc.includes('denture') || proc.includes('rpd')) return PROCEDURE_COLORS.denture;
+  if (proc.includes('guard') || proc.includes('appliance') || proc.includes('retainer') || proc.includes('bleaching')) return PROCEDURE_COLORS.guard;
+  if (proc.includes('veneer') || proc.includes('inlay') || proc.includes('onlay')) return PROCEDURE_COLORS.veneer;
+  return PROCEDURE_COLORS.other;
+}
 
-const patients = [
-  { id:1,  name:'Margaret Holloway', time:'08:30',  type:'Initial Consultation', provider:'Dr. Chen',     room:'Rm 201', notes:'New patient intake.', status:'confirmed',  color:'#00c9a7', start:0,  dur:60  },
-  { id:2,  name:'James Okafor',      time:'09:00',  type:'Follow-up',            provider:'Dr. Patel',    room:'Rm 104', notes:'Post-op check.',     status:'confirmed',  color:'#38bdf8', start:1,  dur:30  },
-  { id:3,  name:'Sophia Reinholt',   time:'10:15',  type:'Lab Review',           provider:'Dr. Marcus',   room:'Lab B',  notes:'Blood panel results.',status:'pending',   color:'#a78bfa', start:2,  dur:45  },
-  { id:4,  name:'Carlos Mendez',     time:'11:00',  type:'Physical Exam',        provider:'Dr. Chen',     room:'Rm 203', notes:'Annual physical.',    status:'confirmed',  color:'#f472b6', start:3,  dur:60  },
-  { id:5,  name:'Anika Patel',       time:'13:30',  type:'Imaging',              provider:'Dr. Osei',     room:'Imaging',notes:'MRI lumbar spine.',   status:'in-progress',color:'#f59e0b', start:5,  dur:90  },
-  { id:6,  name:'Thomas Brandt',     time:'08:00',  type:'Telehealth',           provider:'Dr. Patel',    room:'Virtual',notes:'Remote follow-up.',   status:'confirmed',  color:'#6ee7b7', start:7,  dur:30  },
-  { id:7,  name:'Priya Nair',        time:'14:00',  type:'Procedure',            provider:'Dr. Marcus',   room:'Suite 1',notes:'Minor dermal proc.',   status:'pending',   color:'#fb923c', start:9,  dur:60  },
-  { id:8,  name:'David Fontaine',    time:'09:45',  type:'Follow-up',            provider:'Dr. Chen',     room:'Rm 202', notes:'Cardiac review.',     status:'confirmed',  color:'#818cf8', start:11, dur:45  },
-  { id:9,  name:'Layla Osei',        time:'15:00',  type:'Initial Consultation', provider:'Dr. Osei',     room:'Rm 105', notes:'Referral from GP.',   status:'confirmed',  color:'#34d399', start:12, dur:60  },
-  { id:10, name:'Robert Vasquez',    time:'11:30',  type:'Lab Review',           provider:'Dr. Patel',    room:'Lab A',  notes:'Thyroid levels.',     status:'completed',  color:'#e879f9', start:6,  dur:30  }
+// Get urgency indicator color based on days until appointment
+function getUrgencyColor(daysUntil) {
+  if (daysUntil <= 2) return '#ef4444';  // Red - 0-2 days
+  if (daysUntil <= 5) return '#f97316';  // Orange - 3-5 days
+  return '#fbbf24';                       // Yellow - 6+ days
+}
+
+const AGENDA_START = 8;   // 8 AM
+const AGENDA_END   = 18;  // 6 PM
+const HOUR_PX      = 60;  // height per hour in agenda
+
+const today = new Date(); today.setHours(0,0,0,0);
+let viewDate = new Date(); viewDate.setHours(0,0,0,0); // View anchor - selected date shows in 2nd column
+const addD  = (d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r};
+const toISO = d=>d.toISOString().split('T')[0];
+const inits = n=>n.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);
+const fmt12 = h=>{const s=h%12||12;const m=h>=12?'PM':'AM';return `${s}${m}`};
+
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+let cases = [
+  {id:1, name:'Margaret Holloway',dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 1',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,2)), apptTime:'09:00',dur:60, followUpDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (Full Zirconia)', shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Upper right #3. Reduce occlusal slightly.',        barStart:2, barEnd:3 },
+  {id:2, name:'James Okafor',     dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 2',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,4)), apptTime:'11:00',dur:60, followUpDate:'',status:'waiting-submit',waitReason:'Waiting — shade confirmation needed',priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'FPD / Bridge (3-unit)',  shade:'B1', scanner:'PVS Impression', fabricationNeeded:true, notes:'Bridge #12–#14. Shade photo sent.',                barStart:4, barEnd:5 },
+  {id:3, name:'Sophia Reinholt',  dentist:'Dr. Novak',assistant:'Jamie L.',room:'Chair 3', dateSubmitted:toISO(addD(today,-7)),dateScheduled:toISO(addD(today,1)), apptTime:'14:00',dur:90, followUpDate:'',status:'needs-approval',waitReason:'', priority:'high',  caseReturned:true, review:'approval', archive:'14',procedure:'Veneer',              shade:'BL2',scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'#8–#10 veneers. Contact before delivery.',         barStart:1, barEnd:2 },
+  {id:4, name:'Carlos Mendez',    dentist:'Dr. Reyes', assistant:'Sarah K.',room:'Suite 1',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,3)), apptTime:'08:30',dur:60, followUpDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (E.max / All-Ceramic)',shade:'D3',scanner:'iTero',          fabricationNeeded:true, notes:'Lower molar #19. Patient on blood thinners.',      barStart:3, barEnd:4 },
+  {id:5, name:'Anika Patel',      dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-5)),dateScheduled:toISO(today),          apptTime:'10:00',dur:60, followUpDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'try-in',   archive:'7', procedure:'Implant Crown',     shade:'A1', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Nobel RP platform. Final seating today.',          barStart:0, barEnd:1 },
+  {id:6, name:'Thomas Brandt',    dentist:'Dr. Reyes', assistant:'Mike R.', room:'Suite 2',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,5)), apptTime:'13:30',dur:60, followUpDate:'',status:'received',     waitReason:'', priority:'normal',caseReturned:true, review:'approval', archive:'14',procedure:'Partial Denture (RPD)',shade:'',   scanner:'PVS Impression', fabricationNeeded:true, notes:'Lower RPD. Try-in confirmed for Fri.',             barStart:5, barEnd:6 },
+  {id:7, name:'Priya Nair',       dentist:'Dr. Osei',  assistant:'Jamie L.',room:'Chair 4',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,8)), apptTime:'09:30',dur:60, followUpDate:'',status:'waiting-submit',waitReason:'Waiting — insurance approval',priority:'normal',caseReturned:false,review:'none',  archive:'14',procedure:'Occlusal Guard (Hard)',shade:'',  scanner:'Medit i500',     fabricationNeeded:true, notes:'3mm hard acrylic. Bruxism Rx.',                    barStart:8, barEnd:9 },
+  {id:8, name:'David Fontaine',   dentist:'Dr. Osei',  assistant:'Sarah K.',room:'Suite 2',dateSubmitted:toISO(addD(today,-9)),dateScheduled:toISO(addD(today,2)), apptTime:'11:30',dur:90, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Complete Denture (Upper)',shade:'', scanner:'PVS Impression', fabricationNeeded:true, notes:'Conventional complete denture. Delivered last visit.',barStart:2, barEnd:3},
+  {id:9, name:'Layla Osei',       dentist:'Dr. Osei',  assistant:'Tom B.',  room:'Chair 4',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,6)), apptTime:'15:00',dur:60, followUpDate:'',status:'in-house',     waitReason:'', priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'Diagnostic Wax-Up',   shade:'A3', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Full arch wax-up for treatment planning.',         barStart:6, barEnd:7 },
+  {id:10,name:'Robert Vasquez',   dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 1',dateSubmitted:toISO(addD(today,-6)),dateScheduled:toISO(addD(today,1)), apptTime:'16:00',dur:60, followUpDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A3', scanner:'iTero',          fabricationNeeded:true, notes:'#14 PFM. Pre-cementation check done.',             barStart:1, barEnd:2 },
+  {id:11,name:'Emily Chen',       dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 2',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,-2)), apptTime:'09:00',dur:60, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Delivered 2 days ago.',                           barStart:-2, barEnd:-1 },
+  {id:12,name:'John Smith',       dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,-1)), apptTime:'14:00',dur:60, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Bridge (3-unit)',      shade:'B1', scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'Delivered yesterday.',                             barStart:-1, barEnd:0 },
 ];
 
-// Each patient gets their appointment offset in days from today
-let scale = 1; // weeks
-let activeId = null;
+let scaleDays = 7, activeId = null, currentTab = 'gantt';
+let dateOffset = -1; // Always -1: selected date appears in 2nd column (1 day before shown)
 
-function getScaleDays() { return scale * 7; }
+// ═══════════════════════════════════════════════════════
+// HEADER
+// ═══════════════════════════════════════════════════════
+// Initialize view date input
+document.getElementById('viewDateInput').value = toISO(viewDate);
 
-function buildDate() {
-  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', opts);
+// Date navigation functions
+function setViewDate(dateString) {
+  viewDate = new Date(dateString + 'T00:00:00');
+  document.getElementById('viewDateInput').value = toISO(viewDate);
+  if (currentTab === 'gantt') renderChart();
 }
 
-// ── RENDER LEFT PANEL ─────────────────────────────────────────────────────────
-function renderLeft() {
-  const container = document.getElementById('leftRows');
-  container.innerHTML = '';
-  patients.forEach((p, i) => {
-    const [fg, bg] = avatarColors[i % avatarColors.length];
-    const row = document.createElement('div');
-    row.className = 'patient-row';
-    row.innerHTML = `
-      <div class="patient-avatar" style="background:${bg};color:${fg};border:1px solid ${fg}30">${initials(p.name)}</div>
-      <div class="patient-info">
-        <div class="patient-name">${p.name}</div>
-        <div class="patient-time">${p.time}</div>
-      </div>`;
-    container.appendChild(row);
+function changeViewDate(days) {
+  viewDate = addD(viewDate, days);
+  document.getElementById('viewDateInput').value = toISO(viewDate);
+  if (currentTab === 'gantt') renderChart();
+}
+
+// ═══════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>
+    b.classList.toggle('active',['gantt','agenda','huddle'][i]===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('scaleToggle').style.visibility = tab==='gantt' ? 'visible' : 'hidden';
+  // Always close drawer when switching tabs
+  closeDrawer(true);
+  if (tab==='agenda') renderAgenda();
+  if (tab==='huddle') renderHuddle();
+}
+
+function setScale(days) {
+  scaleDays = days;
+  // dateOffset stays -1 (selected date always in 2nd column)
+  document.querySelectorAll('.scale-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.days)===days));
+  renderChart();
+}
+
+// ═══════════════════════════════════════════════════════
+// NEW CASE MODAL
+// ═══════════════════════════════════════════════════════
+let newCaseModalData = {};
+
+function openNewCaseModal(preFillData = {}) {
+  newCaseModalData = preFillData;
+  
+  // Set default values
+  document.getElementById('ncmName').value = preFillData.name || '';
+  document.getElementById('ncmDentist').value = preFillData.dentist || 'Dr. Novak';
+  document.getElementById('ncmAssistant').value = preFillData.assistant || '';
+  document.getElementById('ncmDate').value = preFillData.dateScheduled || toISO(today);
+  document.getElementById('ncmTime').value = preFillData.apptTime || '';
+  document.getElementById('ncmProcedure').value = preFillData.procedure || 'Crown (PFM)';
+  document.getElementById('ncmDuration').value = preFillData.dur || 60;
+  
+  // Build status chips
+  buildModalStatusChips(preFillData.status || 'waiting-submit');
+  
+  // Show modal
+  document.getElementById('newCaseOverlay').classList.add('visible');
+  
+  // Focus name field
+  setTimeout(() => document.getElementById('ncmName').focus(), 100);
+}
+
+function closeNewCaseModal(event) {
+  // Only close if clicking overlay, not the modal itself
+  if (event && event.target.closest('.new-case-modal')) return;
+  
+  document.getElementById('newCaseOverlay').classList.remove('visible');
+  newCaseModalData = {};
+}
+
+function buildModalStatusChips(currentStatus) {
+  const chips = document.getElementById('ncmStatusChips');
+  chips.innerHTML = '';
+  
+  Object.keys(STATUS_CFG).forEach(key => {
+    const cfg = STATUS_CFG[key];
+    const chip = document.createElement('div');
+    chip.className = `s-chip ${cfg.cls}`;
+    if (key === currentStatus) chip.classList.add('picked');
+    chip.textContent = `${cfg.icon} ${cfg.label}`;
+    chip.onclick = () => {
+      document.querySelectorAll('#ncmStatusChips .s-chip').forEach(c => c.classList.remove('picked'));
+      chip.classList.add('picked');
+      newCaseModalData.status = key;
+    };
+    chips.appendChild(chip);
   });
+  
+  newCaseModalData.status = currentStatus;
 }
 
-// ── RENDER CHART ─────────────────────────────────────────────────────────────
-function renderChart() {
-  const days = getScaleDays();
-  const minColW = 80;
-  const header = document.getElementById('timeHeader');
-  const rows = document.getElementById('chartRows');
-  const todayLine = document.getElementById('todayLine');
-  const chartInner = document.getElementById('chartInner');
-
-  header.innerHTML = '';
-  rows.innerHTML = '';
-
-  // Build time header
-  for (let d = 0; d < days; d++) {
-    const date = addDays(today, d);
-    const isToday = d === 0;
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const cell = document.createElement('div');
-    cell.className = 'time-day' + (isToday ? ' today' : '');
-    cell.innerHTML = `<div class="time-day-name">${dayNames[date.getDay()]}</div>
-                      <div class="time-day-num">${date.getDate()}</div>`;
-    header.appendChild(cell);
+function createNewCaseFromModal() {
+  const name = document.getElementById('ncmName').value.trim();
+  const date = document.getElementById('ncmDate').value;
+  
+  if (!name) {
+    alert('Please enter a patient name');
+    document.getElementById('ncmName').focus();
+    return;
   }
-
-  // Build rows
-  patients.forEach((p, i) => {
-    const [fg, bg] = avatarColors[i % avatarColors.length];
-    const row = document.createElement('div');
-    row.className = 'chart-row';
-
-    for (let d = 0; d < days; d++) {
-      const cell = document.createElement('div');
-      cell.className = 'chart-cell' + (d === 0 ? ' today-col' : '');
-      row.appendChild(cell);
+  
+  if (!date) {
+    alert('Please select an appointment date');
+    document.getElementById('ncmDate').focus();
+    return;
+  }
+  
+  const newId = Math.max(...cases.map(x=>x.id), 0) + 1;
+  const schedDate = new Date(date + 'T00:00:00');
+  const barStart = Math.round((schedDate - viewDate) / 86400000);
+  const barEnd = barStart + 5; // Default 5-day duration
+  
+  // Check for overlapping appointments with the same patient and move them
+  const patientBars = cases.filter(x => x.name === name);
+  
+  // Sort existing bars by barStart to handle cascading moves properly
+  patientBars.sort((a, b) => a.barStart - b.barStart);
+  
+  // Track the rightmost edge as we move bars
+  let rightmostEdge = barEnd;
+  
+  patientBars.forEach(existingBar => {
+    // Check if existing bar overlaps with the new bar range OR with previously moved bars
+    // Overlap formula: existingStart < rightmostEdge AND existingEnd > barStart
+    if (existingBar.barStart < rightmostEdge && existingBar.barEnd > barStart) {
+      // Move existing bar to start after the rightmost edge
+      const existingSpan = existingBar.barEnd - existingBar.barStart;
+      existingBar.barStart = rightmostEdge;
+      existingBar.barEnd = rightmostEdge + existingSpan;
+      
+      // Update rightmost edge for cascading
+      rightmostEdge = existingBar.barEnd;
+      
+      // Update the dateScheduled to match the new barStart
+      const newDate = addD(viewDate, existingBar.barStart);
+      existingBar.dateScheduled = toISO(newDate);
     }
-
-    // Place appointment bar if within current scale
-    if (p.start < days) {
-      const totalCols = days;
-      const pct = (p.start / totalCols) * 100;
-      const durDays = p.dur / (60 * 8); // rough fraction of a work day → visual width
-      const widthPct = Math.max((1 / totalCols) * 100 * 0.85, (p.dur / (60 * 6)) * (100 / totalCols));
-
-      const bar = document.createElement('div');
-      bar.className = 'appt-bar' + (activeId === p.id ? ' active-bar' : '');
-      bar.style.left = `calc(${(p.start / days) * 100}% + 6px)`;
-      bar.style.width = `calc(${(1 / days) * 100}% - 12px)`;
-      bar.style.background = `linear-gradient(135deg, ${p.color}dd, ${p.color}99)`;
-      bar.style.color = '#fff';
-      bar.style.borderLeft = `3px solid ${p.color}`;
-      bar.style.textShadow = '0 1px 3px rgba(0,0,0,0.4)';
-      bar.textContent = p.type;
-      bar.dataset.id = p.id;
-      bar.addEventListener('click', () => openDetail(p.id));
-
-      // Position absolutely over the row
-      bar.style.position = 'absolute';
-      row.style.position = 'relative';
-      row.appendChild(bar);
-    }
-
-    rows.appendChild(row);
   });
-
-  // Sync scrolling between left rows and chart rows
-  syncScroll();
-}
-
-function syncScroll() {
-  const chartArea = document.getElementById('chartArea');
-  const leftRows = document.getElementById('leftRows');
-  chartArea.addEventListener('scroll', () => {
-    leftRows.scrollTop = chartArea.scrollTop;
-  });
-  leftRows.addEventListener('scroll', () => {
-    chartArea.scrollTop = leftRows.scrollTop;
-  });
-}
-
-// ── SCALE TOGGLE ─────────────────────────────────────────────────────────────
-function setScale(weeks) {
-  scale = weeks;
-  document.querySelectorAll('.toggle-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.dataset.weeks) === weeks);
-  });
+  
+  const newCase = {
+    id: newId,
+    name: name,
+    dentist: document.getElementById('ncmDentist').value,
+    assistant: document.getElementById('ncmAssistant').value,
+    room: '',
+    dateSubmitted: toISO(today),
+    dateScheduled: date,
+    apptTime: document.getElementById('ncmTime').value || '',
+    dur: parseInt(document.getElementById('ncmDuration').value),
+    followUpDate: '',
+    status: newCaseModalData.status || 'waiting-submit',
+    waitReason: '',
+    priority: 'normal',
+    caseReturned: false,
+    review: 'none',
+    archive: '14',
+    procedure: document.getElementById('ncmProcedure').value,
+    shade: '',
+    scanner: '',
+    fabricationNeeded: true,
+    notes: '',
+    barStart: barStart,
+    barEnd: barEnd
+  };
+  
+  cases.push(newCase);
+  closeNewCaseModal();
+  renderLeft();
   renderChart();
+  
+  // Auto-open drawer for the new case
+  setTimeout(() => openDrawer(newId), 200);
 }
 
-// ── DETAIL PANEL ─────────────────────────────────────────────────────────────
-function openDetail(id) {
-  activeId = id;
-  const p = patients.find(x => x.id === id);
-  const i = patients.indexOf(p);
-  const [fg, bg] = avatarColors[i % avatarColors.length];
-
-  document.getElementById('detailAvatar').textContent = initials(p.name);
-  document.getElementById('detailAvatar').style.background = bg;
-  document.getElementById('detailAvatar').style.color = fg;
-  document.getElementById('detailAvatar').style.border = `1.5px solid ${fg}50`;
-  document.getElementById('detailName').textContent = p.name;
-  document.getElementById('detailType').textContent = p.type;
-
-  document.getElementById('editName').value = p.name;
-  document.getElementById('editDate').value = fmtDate(addDays(today, p.start));
-  document.getElementById('editStart').value = p.time;
-  document.getElementById('editDuration').value = p.dur;
-  document.getElementById('editStatus').value = p.status;
-  document.getElementById('editType').value = p.type;
-  document.getElementById('editProvider').value = p.provider;
-  document.getElementById('editRoom').value = p.room;
-  document.getElementById('editNotes').value = p.notes;
-
-  document.getElementById('saveIndicator').classList.remove('show');
-  document.getElementById('detailOverlay').classList.add('open');
-  renderChart(); // re-render to show active bar
+// Update existing createNewCase to use modal
+function createNewCase() {
+  openNewCaseModal({
+    dentist: 'Dr. Novak',
+    dateScheduled: toISO(today),
+    status: 'waiting-submit'
+  });
 }
 
-function closeDetail() {
-  activeId = null;
-  document.getElementById('detailOverlay').classList.remove('open');
-  renderChart();
-}
+// ═══════════════════════════════════════════════════════
+// QUICK INFO BUBBLE
+// ═══════════════════════════════════════════════════════
+let infoBubbleCaseId = null;
 
-function saveDetail() {
-  const p = patients.find(x => x.id === activeId);
+function showInfoBubble(caseId, clickEvent) {
+  const p = cases.find(x => x.id === caseId);
   if (!p) return;
-
-  p.name = document.getElementById('editName').value;
-  p.time = document.getElementById('editStart').value;
-  p.dur  = parseInt(document.getElementById('editDuration').value);
-  p.status = document.getElementById('editStatus').value;
-  p.type = document.getElementById('editType').value;
-  p.provider = document.getElementById('editProvider').value;
-  p.room = document.getElementById('editRoom').value;
-  p.notes = document.getElementById('editNotes').value;
-
-  // Parse date back to day offset
-  const newDate = new Date(document.getElementById('editDate').value + 'T00:00:00');
-  const diff = Math.round((newDate - today) / (1000*60*60*24));
-  p.start = Math.max(0, diff);
-
-  // Update header display
-  document.getElementById('detailName').textContent = p.name;
-  document.getElementById('detailType').textContent = p.type;
-
-  const si = document.getElementById('saveIndicator');
-  si.classList.add('show');
-  setTimeout(() => si.classList.remove('show'), 2000);
-
-  renderLeft();
-  renderChart();
+  
+  infoBubbleCaseId = caseId;
+  const bubble = document.getElementById('infoBubble');
+  const i = cases.indexOf(p);
+  const [fg, bg] = PALETTE[i % PALETTE.length];
+  
+  // Populate header
+  const av = document.getElementById('ibAvatar');
+  av.textContent = inits(p.name);
+  av.style.background = bg;
+  av.style.color = fg;
+  av.style.border = `1.5px solid ${fg}55`;
+  document.getElementById('ibName').textContent = p.name;
+  document.getElementById('ibProcedure').textContent = p.procedure;
+  
+  // Populate body with info rows
+  const sc = STATUS_CFG[p.status] || STATUS_CFG['waiting-submit'];
+  const body = document.getElementById('ibBody');
+  body.innerHTML = `
+    <div class="ib-row">
+      <div class="ib-label">Status</div>
+      <div class="ib-value">
+        <span class="badge ${sc.cls}">${sc.icon} ${sc.label}</span>
+        ${p.priority === 'high' ? `<span class="badge b-high" style="margin-left:4px">🔴 High</span>` : ''}
+        ${p.caseReturned ? `<span class="badge b-received" style="margin-left:4px">↩ Returned</span>` : ''}
+      </div>
+    </div>
+    <div class="ib-row">
+      <div class="ib-label">Dentist</div>
+      <div class="ib-value">${p.dentist}</div>
+    </div>
+    <div class="ib-row">
+      <div class="ib-label">Appointment</div>
+      <div class="ib-value">${p.dateScheduled} at ${p.apptTime || '—'}</div>
+    </div>
+    <div class="ib-row">
+      <div class="ib-label">Duration</div>
+      <div class="ib-value">${p.dur} minutes</div>
+    </div>
+    ${p.assistant ? `<div class="ib-row">
+      <div class="ib-label">Assistant</div>
+      <div class="ib-value">${p.assistant}</div>
+    </div>` : ''}
+    ${p.room ? `<div class="ib-row">
+      <div class="ib-label">Operatory</div>
+      <div class="ib-value">${p.room}</div>
+    </div>` : ''}
+    ${p.shade ? `<div class="ib-row">
+      <div class="ib-label">Shade</div>
+      <div class="ib-value">${p.shade}</div>
+    </div>` : ''}
+    ${p.notes.trim() ? `<div class="ib-row">
+      <div class="ib-label">Notes</div>
+      <div class="ib-value ib-value-muted">${p.notes}</div>
+    </div>` : ''}
+  `;
+  
+  // Position the bubble near the click
+  positionInfoBubble(clickEvent);
+  
+  // Show bubble
+  bubble.classList.add('visible');
 }
 
-function deleteAppointment() {
-  const idx = patients.findIndex(x => x.id === activeId);
-  if (idx === -1) return;
-  if (!confirm(`Remove appointment for ${patients[idx].name}?`)) return;
-  patients.splice(idx, 1);
-  closeDetail();
-  renderLeft();
-  renderChart();
+function positionInfoBubble(clickEvent) {
+  const bubble = document.getElementById('infoBubble');
+  const arrow = document.getElementById('ibArrow');
+  
+  // Get click position
+  const clickX = clickEvent.clientX;
+  const clickY = clickEvent.clientY;
+  
+  // Get viewport dimensions
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight;
+  const headerH = 56; // Header height
+  
+  // Bubble dimensions (approximate)
+  const bubbleW = 280;
+  const bubbleH = 380; // approximate max height
+  const offset = 20;
+  const arrowSize = 16;
+  
+  let posX, posY, arrowDir;
+  
+  // Determine best position (prefer right, then left, then bottom, then top)
+  if (clickX + bubbleW + offset < viewportW) {
+    // Position to the right
+    posX = clickX + offset;
+    posY = Math.max(headerH + offset, Math.min(clickY - 120, viewportH - bubbleH - offset));
+    arrowDir = 'left';
+  } else if (clickX - bubbleW - offset > 0) {
+    // Position to the left
+    posX = clickX - bubbleW - offset;
+    posY = Math.max(headerH + offset, Math.min(clickY - 120, viewportH - bubbleH - offset));
+    arrowDir = 'right';
+  } else if (clickY + bubbleH + offset < viewportH) {
+    // Position below
+    posX = Math.max(offset, Math.min(clickX - bubbleW / 2, viewportW - bubbleW - offset));
+    posY = clickY + offset;
+    arrowDir = 'top';
+  } else {
+    // Position above
+    posX = Math.max(offset, Math.min(clickX - bubbleW / 2, viewportW - bubbleW - offset));
+    posY = Math.max(headerH + offset, clickY - bubbleH - offset);
+    arrowDir = 'bottom';
+  }
+  
+  bubble.style.left = posX + 'px';
+  bubble.style.top = posY + 'px';
+  
+  // Update arrow direction
+  arrow.className = 'ib-arrow ' + arrowDir;
 }
 
-// Close overlay on background click
-document.getElementById('detailOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeDetail();
+function closeInfoBubble() {
+  infoBubbleCaseId = null;
+  document.getElementById('infoBubble').classList.remove('visible');
+}
+
+function editFromBubble() {
+  const caseId = infoBubbleCaseId; // Save ID before closing bubble!
+  if (caseId) {
+    closeInfoBubble();
+    openDrawer(caseId);
+  }
+}
+
+// Close bubble when clicking outside (but not on chart cells or interactive elements)
+document.addEventListener('click', (e) => {
+  const bubble = document.getElementById('infoBubble');
+  if (!bubble.classList.contains('visible')) return;
+  
+  if (!bubble.contains(e.target) && 
+      !e.target.closest('.patient-row') && 
+      !e.target.closest('.appt-bar') &&
+      !e.target.closest('.ag-appt') &&
+      !e.target.closest('.bar-resize-handle')) {
+    closeInfoBubble();
+  }
 });
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-buildDate();
+// ═══════════════════════════════════════════════════════
+// LEFT PANEL (Gantt)
+// ═══════════════════════════════════════════════════════
+function renderLeft() {
+  const c = document.getElementById('leftRows');
+  c.innerHTML = '';
+  const providers = [...new Set(cases.map(x=>x.dentist))];
+  let pi = 0;
+  providers.forEach(prov => {
+    const pc = cases.filter(x=>x.dentist===prov);
+    const col = PROVIDER_COLORS[prov]||'#7da8c5';
+    
+    // Group by unique patient names
+    const uniquePatients = [...new Set(pc.map(x=>x.name))];
+    
+    const gh = document.createElement('div');
+    gh.className = 'provider-group-hdr';
+    gh.innerHTML = `<div class="provider-dot" style="background:${col}"></div>
+      <span class="provider-name-lbl" style="color:${col}">${prov}</span>
+      <span class="provider-count">${uniquePatients.length}</span>`;
+    c.appendChild(gh);
+    
+    uniquePatients.forEach(patientName => {
+      const patientAppts = pc.filter(x=>x.name===patientName);
+      const [fg,bg]=PALETTE[pi%PALETTE.length]; pi++;
+      
+      // Find next/most urgent appointment for this patient
+      const sortedAppts = patientAppts.sort((a,b) => {
+        const dateA = new Date(a.dateScheduled);
+        const dateB = new Date(b.dateScheduled);
+        return dateA - dateB;
+      });
+      const primaryAppt = sortedAppts.find(a => new Date(a.dateScheduled) >= today) || sortedAppts[sortedAppts.length - 1];
+      
+      const hasNotes = patientAppts.some(a => a.notes.trim().length > 0);
+      const apptCount = patientAppts.length;
+      
+      const row=document.createElement('div');
+      row.className='patient-row';
+      row.innerHTML=`<div class="p-avatar" style="background:${bg};color:${fg};border:1px solid ${fg}40">${inits(patientName)}</div>
+        <div class="p-info">
+          <div class="p-name" data-id="${primaryAppt.id}" style="cursor:pointer">
+            ${patientName}
+            ${apptCount > 1 ? `<span style="color:var(--text-muted);font-size:10px;margin-left:4px">(${apptCount})</span>` : ''}
+          </div>
+          <div class="p-appt-date">${primaryAppt.dateScheduled} · ${primaryAppt.procedure.split('(')[0].trim()}</div>
+        </div>
+        ${hasNotes?`<span style="color:var(--amber);font-size:12px;opacity:.7;flex-shrink:0;margin-right:4px" title="Notes attached">💬</span>`:''}
+        <svg class="p-info-icon" data-id="${primaryAppt.id}" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text-muted);opacity:.5;flex-shrink:0;cursor:pointer">
+          <circle cx="7" cy="7" r="5.5"/>
+          <path d="M7 6.5v3M7 4.5v.5"/>
+        </svg>`;
+      
+      // Click name to open full detail panel (drawer)
+      const nameEl = row.querySelector('.p-name');
+      nameEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDrawer(primaryAppt.id);
+      });
+      
+      // Click info icon to open small info bubble
+      const infoIcon = row.querySelector('.p-info-icon');
+      infoIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showInfoBubble(primaryAppt.id, e);
+      });
+      
+      c.appendChild(row);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// GANTT CHART
+// ═══════════════════════════════════════════════════════
+function renderChart() {
+  const hdr=document.getElementById('timeHeader'), rows=document.getElementById('chartRows');
+  hdr.innerHTML=''; rows.innerHTML='';
+  const DAY=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  for(let d=0;d<scaleDays;d++){
+    const date=addD(viewDate, d + dateOffset);
+    const isToday = toISO(date) === toISO(today); // Compare actual dates
+    const isWE=date.getDay()===0||date.getDay()===6;
+    const cell=document.createElement('div');
+    cell.className='time-day'+(isToday?' today':'')+(isWE?' weekend':'');
+    cell.innerHTML=`<div class="td-name">${DAY[date.getDay()]}</div><div class="td-num">${date.getDate()}</div>`;
+    hdr.appendChild(cell);
+  }
+  const providers=[...new Set(cases.map(x=>x.dentist))];
+  let pi=0;
+  providers.forEach(prov=>{
+    const pc=cases.filter(x=>x.dentist===prov);
+    const col=PROVIDER_COLORS[prov]||'#7da8c5';
+    const sp=document.createElement('div');
+    sp.className='chart-group-spacer';
+    const pl=document.createElement('span');
+    pl.style.cssText=`font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:${col};white-space:nowrap`;
+    pl.textContent=prov;
+    const ln=document.createElement('div'); ln.className='chart-group-spacer-line';
+    sp.appendChild(pl); sp.appendChild(ln);
+    rows.appendChild(sp);
+    
+    // Group by unique patient names
+    const uniquePatients = [...new Set(pc.map(x=>x.name))];
+    
+    uniquePatients.forEach(patientName => {
+      const patientAppts = pc.filter(x=>x.name===patientName);
+      pi++;
+      const row=document.createElement('div');
+      row.className='chart-row';
+      row.style.background=pi%2===0?'var(--row-even)':'';
+      row.style.position='relative';
+      
+      // Create cells for this row
+      for(let d=0;d<scaleDays;d++){
+        const date=addD(viewDate, d + dateOffset);
+        const isToday = toISO(date) === toISO(today);
+        const isWE=date.getDay()===0||date.getDay()===6;
+        const cell=document.createElement('div');
+        cell.className='chart-cell'+(isToday?' today-col':'')+(isWE?' weekend-col':'');
+        row.appendChild(cell);
+      }
+      
+      // Render ALL bars for this patient on this ONE row
+      patientAppts.forEach(p => {
+        const sc=STATUS_CFG[p.status]||STATUS_CFG['waiting-submit'];
+        
+        // Calculate bar position relative to viewDate
+        const apptDate = new Date(p.dateScheduled + 'T00:00:00');
+        const barStartRelativeToView = Math.round((apptDate - viewDate) / 86400000);
+        const barSpan = p.barEnd - p.barStart; // Preserve the duration span
+        const barEndRelativeToView = barStartRelativeToView + barSpan;
+        
+        // Update stored barStart/barEnd to current view for drag operations
+        p.barStart = barStartRelativeToView;
+        p.barEnd = barEndRelativeToView;
+        
+        // Adjust barStart to account for offset - a bar is visible if it overlaps with the visible range
+        const adjustedBarStart = barStartRelativeToView - dateOffset;
+        const adjustedBarEnd = barEndRelativeToView - dateOffset;
+        // Bar is visible if it starts before the end of visible range AND ends after the start of visible range
+        if(adjustedBarEnd > 0 && adjustedBarStart < scaleDays){
+          const bar=document.createElement('div');
+          const hasN=p.notes.trim().length>0;
+          const span = barSpan; // Number of days this bar spans
+          // Clamp the visible portion to the grid
+          const visibleStart = Math.max(0, adjustedBarStart);
+          const visibleEnd = Math.min(scaleDays, adjustedBarEnd);
+          const visibleSpan = visibleEnd - visibleStart;
+          
+          // Get procedure color
+          const procColor = getProcedureColor(p.procedure);
+          
+          // Calculate days until appointment (from today, not viewDate)
+          const daysUntil = Math.round((apptDate - today) / 86400000);
+          
+          // Determine if urgency indicator should show
+          const showUrgency = !['received', 'needs-approval', 'ready-insert', 'delivered'].includes(p.status);
+          const urgencyColor = showUrgency ? getUrgencyColor(daysUntil) : null;
+          
+          // Format procedure name - remove parentheses, abbreviate if needed
+          let procName = p.procedure.replace(/\s*\([^)]*\)/g, '').trim();
+          
+          // Build bar content
+          let barContent = `<span class="bar-label" title="${p.procedure}">${procName}</span>`;
+          if (span > 1) {
+            barContent += `<span class="bar-days">+${daysUntil}</span>`;
+          }
+          
+          bar.className=`appt-bar`+(activeId===p.id?' active':'');
+          bar.style.cssText=`left:calc(${(visibleStart/scaleDays)*100}% + 5px);width:calc(${(visibleSpan/scaleDays)*100}% - 10px);position:absolute;background:${procColor.bg};border:1px solid ${procColor.border};color:${procColor.text};${urgencyColor ? `border-left:4px solid ${urgencyColor};` : ''}`;
+          bar.innerHTML=barContent;
+          bar.dataset.id=p.id;
+          bar.dataset.patientName=patientName; // Store patient name for collision detection
+          bar.setAttribute('data-span', span === 1 ? '1 day' : `${span} days`);
+          row.appendChild(bar);
+        }
+      });
+      
+      rows.appendChild(row);
+    });
+  });
+  syncScroll();
+  setupBarInteractions(); // Attach drag/resize handlers
+}
+
+let _synced=false;
+function syncScroll(){
+  if(_synced)return; _synced=true;
+  const ca=document.getElementById('chartArea'),lr=document.getElementById('leftRows');
+  ca.addEventListener('scroll',()=>{lr.scrollTop=ca.scrollTop});
+  lr.addEventListener('scroll',()=>{ca.scrollTop=lr.scrollTop});
+}
+
+// ═══════════════════════════════════════════════════════
+// AGENDA VIEW
+// ═══════════════════════════════════════════════════════
+function renderAgenda() {
+  const grid = document.getElementById('agendaGrid');
+  grid.innerHTML = '';
+
+  const providers = [...new Set(cases.map(x=>x.dentist))];
+  const totalCols = 1 + providers.length; // time gutter + one per doctor
+  const TIME_W = 64;
+
+  // Set grid columns: fixed time gutter + equal doctor columns
+  grid.style.gridTemplateColumns = `${TIME_W}px ${providers.map(()=>'1fr').join(' ')}`;
+
+  // ── Row 1: Corner + Doctor headers ──────────────────
+  // Corner cell (sticky top-left)
+  const corner = document.createElement('div');
+  corner.className = 'ag-time-header';
+  corner.style.cssText = 'position:sticky;top:0;left:0;z-index:15;';
+  corner.innerHTML = `<span style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)">TIME</span>`;
+  grid.appendChild(corner);
+
+  // Doctor header cells
+  providers.forEach(prov => {
+    const col = PROVIDER_COLORS[prov] || '#7da8c5';
+    const pc  = cases.filter(x=>x.dentist===prov);
+    const hdr = document.createElement('div');
+    hdr.className = 'ag-doc-header';
+    hdr.innerHTML = `
+      <div class="ag-doc-dot" style="background:${col}"></div>
+      <div class="ag-doc-name" style="color:${col}">${prov}</div>
+      <div class="ag-doc-count">${pc.length}</div>`;
+    grid.appendChild(hdr);
+  });
+
+  // ── Rows 2+: Hours ────────────────────────────────────
+  const nowH = new Date();
+  const nowMinTotal = nowH.getHours()*60 + nowH.getMinutes();
+  const isToday = true; // agenda always shows today
+
+  for (let h = AGENDA_START; h < AGENDA_END; h++) {
+    const isNowHour = isToday && h === nowH.getHours();
+
+    // Time label cell (sticky left)
+    const label = document.createElement('div');
+    label.className = 'ag-hour-label';
+    label.textContent = fmt12(h);
+    grid.appendChild(label);
+
+    // Doctor cells for this hour
+    providers.forEach((prov, pi) => {
+      const cell = document.createElement('div');
+      cell.className = 'ag-doc-cell' + (isNowHour ? ' now-row' : '');
+      cell.style.background = pi%2===0 && !isNowHour ? 'var(--row-even)' : '';
+
+      // Now line inside the current hour cell
+      if (isNowHour) {
+        const nowFrac = (nowMinTotal - h*60) / 60;
+        const nl = document.createElement('div');
+        nl.className = 'ag-now-line';
+        nl.style.top = (nowFrac * HOUR_PX) + 'px';
+        cell.appendChild(nl);
+      }
+
+      grid.appendChild(cell);
+    });
+  }
+
+  // ── Overlay appointment cards ──────────────────────
+  // We need to position them relative to the grid cells.
+  // We'll use a wrapper overlay approach: after the grid is in DOM,
+  // use getBoundingClientRect. Instead, we compute positions directly
+  // using the known HOUR_PX and grid layout.
+
+  // Each doctor gets a relative wrapper we inject AFTER building the grid.
+  // Simpler: we add the cards directly to the cells by injecting them
+  // into the correct hour cell(s) with absolute positioning within those cells.
+
+  cases.forEach(p => {
+    const sc = STATUS_CFG[p.status] || STATUS_CFG['waiting-submit'];
+    const procColor = getProcedureColor(p.procedure);
+    const provIdx = providers.indexOf(p.dentist);
+    if (provIdx === -1) return;
+
+    // Parse time
+    const [hStr, mStr] = (p.apptTime || '09:00').split(':');
+    const startH = parseInt(hStr), startM = parseInt(mStr);
+    const durMin = p.dur || 60;
+
+    if (startH < AGENDA_START || startH >= AGENDA_END) return;
+
+    // The card spans from startH:startM to startH:startM+dur
+    // We position it within the startH cell, and if it overflows
+    // into next hour we let it overflow (height-based).
+
+    const offsetInHour = (startM / 60) * HOUR_PX; // px from top of that hour cell
+    const heightPx = Math.max((durMin / 60) * HOUR_PX - 4, 22);
+    const hasNotes = p.notes.trim().length > 0;
+
+    // Find the correct cell in the grid
+    // Grid row = (h - AGENDA_START) + 2  (1-indexed, row 1 is header)
+    // Grid col = provIdx + 2              (1-indexed, col 1 is time gutter)
+    // We query the cell directly
+    const rowIdx = startH - AGENDA_START; // 0-indexed among hour rows
+    const colIdx = provIdx;               // 0-indexed among doctor cols
+
+    // Total cells per row = 1 (label) + providers.length
+    // Grid children: row0 = headers (1 + providers.length children)
+    //                row1..N = hour rows (each: 1 label + providers.length cells)
+    const headerCount = 1 + providers.length;
+    const cellsPerHourRow = 1 + providers.length;
+    const childIndex = headerCount + rowIdx * cellsPerHourRow + 1 + colIdx;
+    const targetCell = grid.children[childIndex];
+    if (!targetCell) return;
+
+    targetCell.style.position = 'relative';
+    targetCell.style.overflow = 'visible';
+
+    const card = document.createElement('div');
+    card.className = 'ag-appt' + (activeId === p.id ? ' active' : '');
+    card.style.cssText = `
+      top:${offsetInHour + 2}px;
+      height:${heightPx}px;
+      background:${procColor.bg};
+      border-left:3px solid ${procColor.border};
+      color:${procColor.text};
+      z-index: 3;
+    `;
+    
+    // Format procedure name - remove parentheses
+    const procName = p.procedure.replace(/\s*\([^)]*\)/g, '').trim();
+    
+    card.innerHTML = `
+      <div class="ag-appt-name">${p.name}</div>
+      <div class="ag-appt-proc">${procName} · ${p.room}</div>
+      ${heightPx > 44 ? `<div class="ag-appt-badge">${sc.icon} ${sc.label}</div>` : ''}
+    `;
+    card.dataset.id = p.id;
+    card.addEventListener('click', (e) => { e.stopPropagation(); showInfoBubble(p.id, e); });
+    targetCell.appendChild(card);
+  });
+
+  // Scroll to 8am (already at top) — scroll to ~current time if today
+  const agScroll = document.getElementById('agendaScroll');
+  const scrollToHour = Math.max(0, nowH.getHours() - AGENDA_START - 1);
+  agScroll.scrollTop = scrollToHour * HOUR_PX + 52; // +52 for header
+}
+
+// ═══════════════════════════════════════════════════════
+// STATUS CHIPS
+// ═══════════════════════════════════════════════════════
+function buildChips(current) {
+  const wrap=document.getElementById('statusChips'); wrap.innerHTML='';
+  Object.entries(STATUS_CFG).forEach(([val,cfg])=>{
+    const chip=document.createElement('div');
+    chip.className=`s-chip ${cfg.cls}`+(val===current?' picked':'');
+    chip.dataset.status=val; chip.textContent=`${cfg.icon} ${cfg.label}`;
+    chip.onclick=()=>setStatus(val);
+    wrap.appendChild(chip);
+  });
+}
+function setStatus(val){
+  document.getElementById('eStatus').value=val;
+  document.querySelectorAll('.s-chip').forEach(c=>c.classList.toggle('picked',c.dataset.status===val));
+  document.getElementById('waitReasonWrap').classList.toggle('vis',val==='waiting-submit');
+  // archiveNotice element removed - no longer needed
+}
+document.getElementById('eArchive').addEventListener('change',()=>{
+  // Archive notice UI removed - keeping listener for data consistency
+});
+
+// ═══════════════════════════════════════════════════════
+// TOGGLE SWITCH
+// ═══════════════════════════════════════════════════════
+function togCheck(id){
+  const h=document.getElementById(id),sw=document.getElementById(id+'-sw');
+  const next=h.value!=='true'; h.value=String(next); sw.classList.toggle('on',next);
+}
+function setTog(id,val){ document.getElementById(id).value=String(val); document.getElementById(id+'-sw').classList.toggle('on',val); }
+
+// ═══════════════════════════════════════════════════════
+// DRAWER — shared across all views
+// ═══════════════════════════════════════════════════════
+function openDrawer(id) {
+  // Close info bubble if open
+  closeInfoBubble();
+  
+  activeId=id;
+  const p=cases.find(x => x.id === id); 
+  if(!p) return;
+  
+  const i=cases.indexOf(p);
+  const [fg,bg]=PALETTE[i%PALETTE.length];
+  const av=document.getElementById('dAvatar');
+  av.textContent=inits(p.name); 
+  av.style.background=bg; 
+  av.style.color=fg; 
+  av.style.border=`1.5px solid ${fg}55`;
+  
+  document.getElementById('dName').value = p.name;
+  document.getElementById('dProcedure').textContent = p.procedure;
+  
+  // Two-way binding between header name and field name
+  const headerName = document.getElementById('dName');
+  const fieldName = document.getElementById('eName');
+  headerName.oninput = () => { fieldName.value = headerName.value; };
+  fieldName.oninput = () => { headerName.value = fieldName.value; };
+  
+  renderBadges(p);
+
+  document.getElementById('eName').value=p.name;
+  document.getElementById('eDentist').value=p.dentist;
+  document.getElementById('eAssistant').value=p.assistant;
+  document.getElementById('eRoom').value=p.room||'';
+  document.getElementById('eDateSubmitted').value=p.dateSubmitted;
+  document.getElementById('eDateScheduled').value=p.dateScheduled;
+  document.getElementById('eApptTime').value=p.apptTime||'09:00';
+  document.getElementById('eDuration').value=p.dur||60;
+  document.getElementById('eFollowUpDate').value=p.followUpDate||'';
+  document.getElementById('eProcedure').value=p.procedure;
+  document.getElementById('eShade').value=p.shade;
+  document.getElementById('eScanner').value=p.scanner;
+  document.getElementById('eFabricationNeeded').checked=p.fabricationNeeded||false;
+  document.getElementById('ePriority').value=p.priority;
+  document.getElementById('eReview').value=p.review;
+  document.getElementById('eNotes').value=p.notes;
+  document.getElementById('eWaitReason').value=p.waitReason||'';
+  document.getElementById('eArchive').value=p.archive||'14';
+  document.getElementById('eCaseReturned').value=p.caseReturned?'true':'false';
+  buildChips(p.status);
+  setStatus(p.status);
+
+  document.getElementById('saveFlash').classList.remove('show');
+  
+  const wasOpen = document.getElementById('drawer').classList.contains('open');
+  document.getElementById('drawer').classList.add('open');
+
+  // Update active bar/card highlighting
+  document.querySelectorAll('.appt-bar').forEach(bar => {
+    bar.classList.toggle('active', parseInt(bar.dataset.id) === id);
+  });
+  document.querySelectorAll('.ag-appt').forEach(card => {
+    card.classList.toggle('active', parseInt(card.dataset.id) === id);
+  });
+
+  // Only re-render if drawer wasn't already open
+  if (!wasOpen) {
+    if(currentTab==='gantt') renderChart();
+    if(currentTab==='agenda') renderAgenda();
+  }
+}
+
+function renderBadges(p){
+  const sc=STATUS_CFG[p.status]||STATUS_CFG['waiting-submit'];
+  let h=`<span class="badge ${sc.cls}">${sc.icon} ${sc.label}</span>`;
+  h+=p.priority==='high'?`<span class="badge b-high">🔴 High</span>`:`<span class="badge b-normal">◦ Normal</span>`;
+  if(p.caseReturned) h+=`<span class="badge b-received">↩ Returned</span>`;
+  if(p.review!=='none') h+=`<span class="badge b-needs-approval">⚠ ${p.review}</span>`;
+  document.getElementById('dBadges').innerHTML=h;
+}
+
+function closeDrawer(silent=false){
+  activeId=null;
+  document.getElementById('drawer').classList.remove('open');
+  if(!silent){
+    if(currentTab==='gantt') renderChart();
+    if(currentTab==='agenda') renderAgenda();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════════
+function saveCase(){
+  const p=cases.find(x=>x.id===activeId); if(!p) return;
+  const oldSpan = p.barEnd - p.barStart; // Preserve the span
+  
+  // Get name from either field (they're synced)
+  p.name=document.getElementById('eName').value;
+  p.dentist=document.getElementById('eDentist').value;
+  p.assistant=document.getElementById('eAssistant').value;
+  p.room=document.getElementById('eRoom').value;
+  p.dateSubmitted=document.getElementById('eDateSubmitted').value;
+  p.dateScheduled=document.getElementById('eDateScheduled').value;
+  p.apptTime=document.getElementById('eApptTime').value;
+  p.dur=parseInt(document.getElementById('eDuration').value);
+  p.followUpDate=document.getElementById('eFollowUpDate').value;
+  p.procedure=document.getElementById('eProcedure').value;
+  p.shade=document.getElementById('eShade').value;
+  p.scanner=document.getElementById('eScanner').value;
+  p.fabricationNeeded=document.getElementById('eFabricationNeeded').checked;
+  p.status=document.getElementById('eStatus').value;
+  p.waitReason=document.getElementById('eWaitReason').value;
+  p.priority=document.getElementById('ePriority').value;
+  p.review=document.getElementById('eReview').value;
+  p.notes=document.getElementById('eNotes').value;
+  p.archive=document.getElementById('eArchive').value;
+  p.caseReturned=document.getElementById('eCaseReturned').value==='true';
+  const sd=new Date(p.dateScheduled+'T00:00:00');
+  // Calculate barStart relative to viewDate for current view positioning
+  p.barStart=Math.round((sd-viewDate)/86400000);
+  p.barEnd=p.barStart + oldSpan; // Maintain the span
+  
+  // Update both name fields
+  document.getElementById('dName').value=p.name;
+  document.getElementById('dProcedure').textContent=p.procedure;
+  renderBadges(p);
+  const sf=document.getElementById('saveFlash'); sf.classList.add('show');
+  setTimeout(()=>sf.classList.remove('show'),2200);
+  renderLeft(); renderChart();
+  if(currentTab==='agenda') renderAgenda();
+}
+
+function deleteCase(){
+  const idx=cases.findIndex(x=>x.id===activeId); if(idx===-1)return;
+  if(!confirm(`Remove case for ${cases[idx].name}?`))return;
+  cases.splice(idx,1); closeDrawer(); renderLeft(); renderChart();
+}
+
+// ═══════════════════════════════════════════════════════
+// HUDDLE
+// ═══════════════════════════════════════════════════════
+function renderHuddle(){
+  const body=document.getElementById('huddleBody'); body.innerHTML='';
+  const weekAgo=toISO(addD(today,-7));
+  const outstanding=cases.filter(x=>x.status!=='delivered');
+  const returnedTW=cases.filter(x=>x.caseReturned&&x.dateSubmitted>=weekAgo);
+  const needsApproval=cases.filter(x=>x.review!=='none');
+  const waitSub=cases.filter(x=>x.status==='waiting-submit');
+  const highPri=cases.filter(x=>x.priority==='high');
+  const readyIns=cases.filter(x=>x.status==='ready-insert');
+
+  function card(icon,title,sub,stat,sc,listItems){
+    const c=document.createElement('div'); c.className='huddle-card';
+    c.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">${icon}</div><div><div class="huddle-card-title">${title}</div><div class="huddle-card-sub">${sub}</div></div></div>
+    <div class="huddle-stat" style="color:${sc}">${stat}</div>
+    <div class="huddle-list">${listItems.map(item=>`<div class="huddle-item"><div><div class="hi-name">${item.name}</div><div class="hi-sub">${item.sub}</div></div><span class="hi-badge" style="background:${item.bc};color:${item.tc}">${item.tag}</span></div>`).join('')}${listItems.length===0?`<div style="font-size:11px;color:var(--text-muted);padding:6px 0">None at this time</div>`:''}</div>`;
+    return c;
+  }
+  body.appendChild(card('⏳','Cases Outstanding','Active lab cases not yet delivered',outstanding.length,'var(--amber)',
+    outstanding.slice(0,6).map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:x.status==='needs-approval'?'rgba(255,107,107,.15)':x.status==='submitted'?'rgba(245,158,11,.15)':'rgba(52,211,153,.1)',tc:x.status==='needs-approval'?'var(--coral)':x.status==='submitted'?'var(--amber)':'var(--green)'}))));
+  body.appendChild(card('✅','Ready for Insert','Cases cleared and ready for seating',readyIns.length,'var(--green)',
+    readyIns.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:'Ready',bc:'rgba(52,211,153,.15)',tc:'var(--green)'}))));
+  body.appendChild(card('📦','Returned This Week','Lab cases received back in office',returnedTW.length,'var(--sky)',
+    returnedTW.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review!=='none'?'Needs Review':'OK',bc:x.review!=='none'?'rgba(255,107,107,.15)':'rgba(52,211,153,.1)',tc:x.review!=='none'?'var(--coral)':'var(--green)'}))));
+  body.appendChild(card('⚠️','Approvals Needed','Provider action required before insert',needsApproval.length,'var(--coral)',
+    needsApproval.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
+  body.appendChild(card('◌','Waiting to Submit','Cases not yet sent to lab',waitSub.length,'var(--text-muted)',
+    waitSub.map(x=>({name:x.name,sub:x.waitReason||'Reason not specified',tag:x.priority==='high'?'High':'Normal',bc:x.priority==='high'?'rgba(255,107,107,.15)':'rgba(74,122,155,.1)',tc:x.priority==='high'?'var(--coral)':'var(--text-muted)'}))));
+  body.appendChild(card('🔴','High Priority','Cases flagged as urgent',highPri.length,'var(--coral)',
+    highPri.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
+
+  const lc=document.createElement('div'); lc.className='huddle-card';
+  lc.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">🎨</div><div><div class="huddle-card-title">Bar Color Legend</div><div class="huddle-card-sub">Status reference</div></div></div>
+  <div class="legend-wrap">${Object.entries(STATUS_CFG).map(([,c])=>`<div class="legend-item"><div class="legend-dot" style="background:${c.agColor[1]}"></div><span class="legend-label">${c.icon} ${c.label}</span></div>`).join('')}</div>`;
+  body.appendChild(lc);
+}
+
+// ═══════════════════════════════════════════════════════
+// INTERACTIVE BARS — Drag, Resize, Create
+// ═══════════════════════════════════════════════════════
+let dragState = null; // {type:'move'|'resize-left'|'resize-right', caseId, startX, startBarStart, startBarWidth, cellWidth}
+
+
+function setupBarInteractions() {
+  // This function attaches drag/resize handlers to bars after rendering
+  // Called at the end of renderChart()
+  document.querySelectorAll('.appt-bar').forEach(bar => {
+    const caseId = parseInt(bar.dataset.id);
+    
+    // Add resize handles
+    const leftHandle = document.createElement('div');
+    leftHandle.className = 'bar-resize-handle bar-resize-left';
+    leftHandle.addEventListener('mousedown', (e) => startResize(e, caseId, 'left'));
+    bar.appendChild(leftHandle);
+    
+    const rightHandle = document.createElement('div');
+    rightHandle.className = 'bar-resize-handle bar-resize-right';
+    rightHandle.addEventListener('mousedown', (e) => startResize(e, caseId, 'right'));
+    bar.appendChild(rightHandle);
+    
+    // Bar body for moving
+    bar.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.bar-resize-handle')) return;
+      startMove(e, caseId);
+    });
+  });
+  
+  // Cell click to create
+  const allRows = document.querySelectorAll('.chart-rows > *');
+  allRows.forEach((row, rowIdx) => {
+    // Skip spacer rows
+    if (row.classList.contains('chart-group-spacer')) return;
+    
+    const cells = row.querySelectorAll('.chart-cell');
+    cells.forEach((cell, cellIdx) => {
+      cell.addEventListener('click', (e) => {
+        if (e.target.closest('.appt-bar')) return; // Don't create if clicking a bar
+        createCaseAtCell(rowIdx, cellIdx);
+      });
+    });
+  });
+}
+
+function createCaseAtCell(rowIdx, dayIdx) {
+  // Figure out which provider this row belongs to
+  // Need to account for provider spacer rows
+  const providers = [...new Set(cases.map(x=>x.dentist))];
+  let rowCounter = 0;
+  let targetProvider = providers[0];
+  let targetPatientName = '';
+  
+  for (const prov of providers) {
+    const provCases = cases.filter(x=>x.dentist===prov);
+    const uniquePatients = [...new Set(provCases.map(x=>x.name))];
+    // Each provider group has 1 spacer + N unique patient rows
+    const groupSize = 1 + uniquePatients.length;
+    
+    if (rowIdx < rowCounter + groupSize) {
+      targetProvider = prov;
+      
+      // Determine which patient row within this provider group
+      // rowCounter = spacer row, rowCounter+1 = first patient, etc.
+      const patientIndex = rowIdx - rowCounter - 1;
+      
+      // If clicking on a patient row (not spacer), pre-fill that patient's name
+      if (patientIndex >= 0 && patientIndex < uniquePatients.length) {
+        targetPatientName = uniquePatients[patientIndex];
+      }
+      
+      break;
+    }
+    rowCounter += groupSize;
+  }
+  
+  // Adjust day index for the offset (cells show days from viewDate + offset)
+  const actualDayIdx = dayIdx + dateOffset;
+  const schedDate = addD(viewDate, actualDayIdx);
+  
+  // Open modal with pre-populated data
+  openNewCaseModal({
+    dentist: targetProvider,
+    dateScheduled: toISO(schedDate),
+    status: 'waiting-submit',
+    name: targetPatientName
+  });
+}
+
+// Collision detection helper - checks if proposed bar position overlaps with other patient bars
+function checkBarCollision(caseId, proposedStart, proposedEnd) {
+  const currentCase = cases.find(x=>x.id===caseId);
+  if (!currentCase) return false;
+  
+  // Get all other appointments for the same patient
+  const patientBars = cases.filter(x => x.name === currentCase.name && x.id !== caseId);
+  
+  // Check if proposed range overlaps with any other bar
+  // Overlap formula: proposedStart < otherEnd AND proposedEnd > otherStart
+  for (const otherBar of patientBars) {
+    if (proposedStart < otherBar.barEnd && proposedEnd > otherBar.barStart) {
+      return true; // Collision detected
+    }
+  }
+  
+  return false; // No collision
+}
+
+function startMove(e, caseId) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const p = cases.find(x=>x.id===caseId);
+  if (!p) return;
+  
+  const bar = e.currentTarget;
+  bar.style.cursor = 'move'; // Change to move cursor when dragging starts
+  const cellWidth = bar.parentElement.querySelector('.chart-cell').offsetWidth;
+  
+  dragState = {
+    type: 'move',
+    caseId,
+    startX: e.clientX,
+    startY: e.clientY,
+    startBarStart: p.barStart,
+    startBarEnd: p.barEnd,
+    cellWidth,
+    hasMoved: false
+  };
+  
+  bar.classList.add('dragging');
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', handleMouseUp);
+}
+
+function startResize(e, caseId, side) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const p = cases.find(x=>x.id===caseId);
+  if (!p) return;
+  
+  const bar = e.target.closest('.appt-bar');
+  const cellWidth = bar.parentElement.querySelector('.chart-cell').offsetWidth;
+  
+  dragState = {
+    type: side === 'left' ? 'resize-left' : 'resize-right',
+    caseId,
+    startX: e.clientX,
+    startY: e.clientY,
+    startBarStart: p.barStart,
+    startBarEnd: p.barEnd,
+    cellWidth,
+    hasMoved: false
+  };
+  
+  bar.classList.add('resizing');
+  bar.style.cursor = 'ew-resize';
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', handleMouseUp);
+}
+
+function handleMouseMove(e) {
+  if (!dragState) return;
+  
+  const dx = e.clientX - dragState.startX;
+  const dy = e.clientY - dragState.startY;
+  
+  // Mark as moved if mouse traveled more than 5px
+  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+    dragState.hasMoved = true;
+  }
+  
+  const daysDelta = Math.round(dx / dragState.cellWidth);
+  const p = cases.find(x=>x.id===dragState.caseId);
+  if (!p) return;
+  
+  if (dragState.type === 'move') {
+    // Move both start and end together
+    const span = dragState.startBarEnd - dragState.startBarStart;
+    const newStart = dragState.startBarStart + daysDelta;
+    const newEnd = newStart + span;
+    
+    // Check for collision before updating
+    const hasCollision = checkBarCollision(dragState.caseId, newStart, newEnd);
+    if (!hasCollision) {
+      if (newStart !== p.barStart || newEnd !== p.barEnd) {
+        p.barStart = newStart;
+        p.barEnd = newEnd;
+        // Calculate date from viewDate position (barStart is relative to viewDate)
+        const gridDate = addD(viewDate, newStart);
+        p.dateScheduled = toISO(gridDate);
+        
+        // For visual update, calculate grid position
+        const gridPos = newStart - dateOffset;
+        updateBarPositionAndWidth(dragState.caseId, gridPos, gridPos + span);
+      }
+    } else {
+      // Show collision feedback
+      const bar = document.querySelector(`.appt-bar[data-id="${dragState.caseId}"]`);
+      if (bar && !bar.classList.contains('collision-blocked')) {
+        bar.classList.add('collision-blocked');
+        setTimeout(() => bar.classList.remove('collision-blocked'), 300);
+      }
+    }
+  } else if (dragState.type === 'resize-left') {
+    // Drag left edge: adjust barStart, keep barEnd fixed
+    // Ensure minimum span of 1 day
+    const maxStart = dragState.startBarEnd - 1;
+    const newStart = Math.min(maxStart, dragState.startBarStart + daysDelta);
+    
+    // Check for collision before updating
+    const hasCollision = checkBarCollision(dragState.caseId, newStart, p.barEnd);
+    if (!hasCollision) {
+      if (newStart !== p.barStart) {
+        p.barStart = newStart;
+        // Calculate date from viewDate position (barStart is relative to viewDate)
+        const gridDate = addD(viewDate, newStart);
+        p.dateScheduled = toISO(gridDate);
+        
+        // For visual update, calculate grid position
+        const gridPos = newStart - dateOffset;
+        updateBarPositionAndWidth(dragState.caseId, gridPos, p.barEnd - dateOffset);
+      }
+    } else {
+      // Show collision feedback
+      const bar = document.querySelector(`.appt-bar[data-id="${dragState.caseId}"]`);
+      if (bar && !bar.classList.contains('collision-blocked')) {
+        bar.classList.add('collision-blocked');
+        setTimeout(() => bar.classList.remove('collision-blocked'), 300);
+      }
+    }
+  } else if (dragState.type === 'resize-right') {
+    // Drag right edge: adjust barEnd, keep barStart fixed
+    // Ensure minimum span of 1 day
+    const minEnd = dragState.startBarStart + 1;
+    const newEnd = Math.max(minEnd, dragState.startBarEnd + daysDelta);
+    
+    // Check for collision before updating
+    const hasCollision = checkBarCollision(dragState.caseId, p.barStart, newEnd);
+    if (!hasCollision) {
+      if (newEnd !== p.barEnd) {
+        p.barEnd = newEnd;
+        
+        // For visual update, calculate grid position
+        const gridPos = p.barStart - dateOffset;
+        updateBarPositionAndWidth(dragState.caseId, gridPos, newEnd - dateOffset);
+      }
+    } else {
+      // Show collision feedback
+      const bar = document.querySelector(`.appt-bar[data-id="${dragState.caseId}"]`);
+      if (bar && !bar.classList.contains('collision-blocked')) {
+        bar.classList.add('collision-blocked');
+        setTimeout(() => bar.classList.remove('collision-blocked'), 300);
+      }
+    }
+  }
+}
+
+function updateBarPositionAndWidth(caseId, newStart, newEnd) {
+  // Update bar position and width without full re-render to preserve event handlers
+  const bar = document.querySelector(`.appt-bar[data-id="${caseId}"]`);
+  if (!bar) return;
+  
+  const span = newEnd - newStart;
+  const newLeft = `calc(${(newStart / scaleDays) * 100}% + 5px)`;
+  const newWidth = `calc(${(span / scaleDays) * 100}% - 10px)`;
+  bar.style.left = newLeft;
+  bar.style.width = newWidth;
+  bar.setAttribute('data-span', span === 1 ? '1 day' : `${span} days`);
+}
+
+function handleMouseUp(e) {
+  if (!dragState) return;
+  
+  const wasMoved = dragState.hasMoved;
+  const wasMove = dragState.type === 'move';
+  const caseId = dragState.caseId;
+  
+  const bar = document.querySelector(`.appt-bar[data-id="${caseId}"]`);
+  if (bar) {
+    bar.classList.remove('dragging', 'resizing');
+    bar.style.cursor = 'pointer'; // Reset to pointer cursor
+  }
+  
+  document.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('mouseup', handleMouseUp);
+  
+  const clickEvent = e; // Store event for bubble positioning
+  dragState = null;
+  
+  // If it was a click (not a drag) on move, show info bubble
+  if (!wasMoved && wasMove) {
+    showInfoBubble(caseId, clickEvent);
+  } else if (wasMoved) {
+    // Full re-render after drag/resize to update everything properly
+    renderLeft();
+    renderChart();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════════════
+function toggleTheme() {
+  const body = document.body;
+  const currentTheme = body.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  
+  body.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
+// Load saved theme preference on page load
+function loadTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.body.setAttribute('data-theme', savedTheme);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+// Load theme first
+loadTheme();
+
+// Close drawer/bubbles on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('newCaseOverlay').classList.contains('visible')) {
+      closeNewCaseModal();
+    } else if (document.getElementById('infoBubble').classList.contains('visible')) {
+      closeInfoBubble();
+    } else if (document.getElementById('drawer').classList.contains('open')) {
+      closeDrawer();
+    }
+  }
+});
+
 renderLeft();
 renderChart();
 </script>
