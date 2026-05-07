@@ -188,6 +188,9 @@ body[data-theme="light"] .appt-bar.resizing::before{background:var(--panel-bg);b
 .bar-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;pointer-events:none}
 .bar-days{font-size:9px;font-weight:700;padding:2px 5px;background:rgba(0,0,0,.15);border-radius:3px;margin-left:4px;flex-shrink:0;pointer-events:none}
 body[data-theme="light"] .bar-days{background:rgba(0,0,0,.1)}
+.bar-warn{font-size:10px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;flex-shrink:0;margin-left:3px;pointer-events:auto;cursor:help;display:inline-flex;align-items:center;justify-content:center;min-width:14px;height:14px}
+.bar-warn-followup{background:rgba(245,158,11,.85);color:#1a1a1a;box-shadow:0 0 0 1px rgba(245,158,11,.4)}
+.bar-warn-insert{background:rgba(255,107,107,.9);color:#fff;box-shadow:0 0 0 1px rgba(255,107,107,.5)}
 .bar-resize-handle{position:absolute;top:0;bottom:0;width:10px;z-index:5;opacity:0;transition:opacity .15s}
 .appt-bar:hover .bar-resize-handle{opacity:.6}
 .bar-resize-handle:hover{opacity:1!important}
@@ -696,6 +699,9 @@ body[data-theme="light"] .btn-danger:hover{background:rgba(220,53,69,.08)}
 .huddle-body{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;align-content:start}
 .huddle-card{background:var(--panel-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.huddle-card-action{border-color:rgba(245,158,11,.4);box-shadow:0 1px 3px rgba(0,0,0,.1),0 0 0 1px rgba(245,158,11,.15)}
+body[data-theme="light"] .huddle-card-action{box-shadow:0 1px 3px rgba(0,0,0,.05),0 0 0 1px rgba(245,158,11,.18)}
+.huddle-section-hdr{grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);padding:6px 4px 0;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:-4px}
 .huddle-card-header{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .huddle-card-icon{font-size:18px}
 .huddle-card-title{font-size:13px;font-weight:600}
@@ -1017,7 +1023,7 @@ body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
         </div>
         <div class="f-row">
           <div class="f-grp"><div class="f-lbl">Follow-up Date</div><input class="f-inp" type="date" id="eFollowUpDate"/></div>
-          <div class="f-grp-placeholder"></div>
+          <div class="f-grp"><div class="f-lbl">Insertion Date</div><input class="f-inp" type="date" id="eInsertionDate"/></div>
         </div>
       </div>
 
@@ -1160,18 +1166,18 @@ const fmt12 = h=>{const s=h%12||12;const m=h>=12?'PM':'AM';return `${s}${m}`};
 // DATA
 // ═══════════════════════════════════════════════════════
 let cases = [
-  {id:1, name:'Margaret Holloway',dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 1',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,2)), apptTime:'09:00',dur:60, followUpDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (Full Zirconia)', shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Upper right #3. Reduce occlusal slightly.',        barStart:2, barEnd:3 },
-  {id:2, name:'James Okafor',     dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 2',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,4)), apptTime:'11:00',dur:60, followUpDate:'',status:'waiting-submit',waitReason:'Waiting — shade confirmation needed',priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'FPD / Bridge (3-unit)',  shade:'B1', scanner:'PVS Impression', fabricationNeeded:true, notes:'Bridge #12–#14. Shade photo sent.',                barStart:4, barEnd:5 },
-  {id:3, name:'Sophia Reinholt',  dentist:'Dr. Novak',assistant:'Jamie L.',room:'Chair 3', dateSubmitted:toISO(addD(today,-7)),dateScheduled:toISO(addD(today,1)), apptTime:'14:00',dur:90, followUpDate:'',status:'needs-approval',waitReason:'', priority:'high',  caseReturned:true, review:'approval', archive:'14',procedure:'Veneer',              shade:'BL2',scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'#8–#10 veneers. Contact before delivery.',         barStart:1, barEnd:2 },
-  {id:4, name:'Carlos Mendez',    dentist:'Dr. Reyes', assistant:'Sarah K.',room:'Suite 1',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,3)), apptTime:'08:30',dur:60, followUpDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (E.max / All-Ceramic)',shade:'D3',scanner:'iTero',          fabricationNeeded:true, notes:'Lower molar #19. Patient on blood thinners.',      barStart:3, barEnd:4 },
-  {id:5, name:'Anika Patel',      dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-5)),dateScheduled:toISO(today),          apptTime:'10:00',dur:60, followUpDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'try-in',   archive:'7', procedure:'Implant Crown',     shade:'A1', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Nobel RP platform. Final seating today.',          barStart:0, barEnd:1 },
-  {id:6, name:'Thomas Brandt',    dentist:'Dr. Reyes', assistant:'Mike R.', room:'Suite 2',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,5)), apptTime:'13:30',dur:60, followUpDate:'',status:'received',     waitReason:'', priority:'normal',caseReturned:true, review:'approval', archive:'14',procedure:'Partial Denture (RPD)',shade:'',   scanner:'PVS Impression', fabricationNeeded:true, notes:'Lower RPD. Try-in confirmed for Fri.',             barStart:5, barEnd:6 },
-  {id:7, name:'Priya Nair',       dentist:'Dr. Osei',  assistant:'Jamie L.',room:'Chair 4',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,8)), apptTime:'09:30',dur:60, followUpDate:'',status:'waiting-submit',waitReason:'Waiting — insurance approval',priority:'normal',caseReturned:false,review:'none',  archive:'14',procedure:'Occlusal Guard (Hard)',shade:'',  scanner:'Medit i500',     fabricationNeeded:true, notes:'3mm hard acrylic. Bruxism Rx.',                    barStart:8, barEnd:9 },
-  {id:8, name:'David Fontaine',   dentist:'Dr. Osei',  assistant:'Sarah K.',room:'Suite 2',dateSubmitted:toISO(addD(today,-9)),dateScheduled:toISO(addD(today,2)), apptTime:'11:30',dur:90, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Complete Denture (Upper)',shade:'', scanner:'PVS Impression', fabricationNeeded:true, notes:'Conventional complete denture. Delivered last visit.',barStart:2, barEnd:3},
-  {id:9, name:'Layla Osei',       dentist:'Dr. Osei',  assistant:'Tom B.',  room:'Chair 4',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,6)), apptTime:'15:00',dur:60, followUpDate:'',status:'in-house',     waitReason:'', priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'Diagnostic Wax-Up',   shade:'A3', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Full arch wax-up for treatment planning.',         barStart:6, barEnd:7 },
-  {id:10,name:'Robert Vasquez',   dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 1',dateSubmitted:toISO(addD(today,-6)),dateScheduled:toISO(addD(today,1)), apptTime:'16:00',dur:60, followUpDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A3', scanner:'iTero',          fabricationNeeded:true, notes:'#14 PFM. Pre-cementation check done.',             barStart:1, barEnd:2 },
-  {id:11,name:'Emily Chen',       dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 2',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,-2)), apptTime:'09:00',dur:60, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Delivered 2 days ago.',                           barStart:-2, barEnd:-1 },
-  {id:12,name:'John Smith',       dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,-1)), apptTime:'14:00',dur:60, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Bridge (3-unit)',      shade:'B1', scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'Delivered yesterday.',                             barStart:-1, barEnd:0 },
+  {id:1, name:'Margaret Holloway',dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 1',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,2)), apptTime:'09:00',dur:60, followUpDate:'',insertionDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (Full Zirconia)', shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Upper right #3. Reduce occlusal slightly.',        barStart:2, barEnd:3 },
+  {id:2, name:'James Okafor',     dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 2',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,4)), apptTime:'11:00',dur:60, followUpDate:'',insertionDate:'',status:'waiting-submit',waitReason:'Waiting — shade confirmation needed',priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'FPD / Bridge (3-unit)',  shade:'B1', scanner:'PVS Impression', fabricationNeeded:true, notes:'Bridge #12–#14. Shade photo sent.',                barStart:4, barEnd:5 },
+  {id:3, name:'Sophia Reinholt',  dentist:'Dr. Novak',assistant:'Jamie L.',room:'Chair 3', dateSubmitted:toISO(addD(today,-7)),dateScheduled:toISO(addD(today,1)), apptTime:'14:00',dur:90, followUpDate:'',insertionDate:'',status:'needs-approval',waitReason:'', priority:'high',  caseReturned:true, review:'approval', archive:'14',procedure:'Veneer',              shade:'BL2',scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'#8–#10 veneers. Contact before delivery.',         barStart:1, barEnd:2 },
+  {id:4, name:'Carlos Mendez',    dentist:'Dr. Reyes', assistant:'Sarah K.',room:'Suite 1',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,3)), apptTime:'08:30',dur:60, followUpDate:'',insertionDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (E.max / All-Ceramic)',shade:'D3',scanner:'iTero',          fabricationNeeded:true, notes:'Lower molar #19. Patient on blood thinners.',      barStart:3, barEnd:4 },
+  {id:5, name:'Anika Patel',      dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-5)),dateScheduled:toISO(today),          apptTime:'10:00',dur:60, followUpDate:'',insertionDate:toISO(today),status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'try-in',   archive:'7', procedure:'Implant Crown',     shade:'A1', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Nobel RP platform. Final seating today.',          barStart:0, barEnd:1 },
+  {id:6, name:'Thomas Brandt',    dentist:'Dr. Reyes', assistant:'Mike R.', room:'Suite 2',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,5)), apptTime:'13:30',dur:60, followUpDate:'',insertionDate:'',status:'received',     waitReason:'', priority:'normal',caseReturned:true, review:'approval', archive:'14',procedure:'Partial Denture (RPD)',shade:'',   scanner:'PVS Impression', fabricationNeeded:true, notes:'Lower RPD. Try-in confirmed for Fri.',             barStart:5, barEnd:6 },
+  {id:7, name:'Priya Nair',       dentist:'Dr. Osei',  assistant:'Jamie L.',room:'Chair 4',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,8)), apptTime:'09:30',dur:60, followUpDate:'',insertionDate:'',status:'waiting-submit',waitReason:'Waiting — insurance approval',priority:'normal',caseReturned:false,review:'none',  archive:'14',procedure:'Occlusal Guard (Hard)',shade:'',  scanner:'Medit i500',     fabricationNeeded:true, notes:'3mm hard acrylic. Bruxism Rx.',                    barStart:8, barEnd:9 },
+  {id:8, name:'David Fontaine',   dentist:'Dr. Osei',  assistant:'Sarah K.',room:'Suite 2',dateSubmitted:toISO(addD(today,-9)),dateScheduled:toISO(addD(today,2)), apptTime:'11:30',dur:90, followUpDate:'',insertionDate:toISO(addD(today,-2)),status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Complete Denture (Upper)',shade:'', scanner:'PVS Impression', fabricationNeeded:true, notes:'Conventional complete denture. Delivered last visit.',barStart:2, barEnd:3},
+  {id:9, name:'Layla Osei',       dentist:'Dr. Osei',  assistant:'Tom B.',  room:'Chair 4',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,6)), apptTime:'15:00',dur:60, followUpDate:'',insertionDate:'',status:'in-house',     waitReason:'', priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'Diagnostic Wax-Up',   shade:'A3', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Full arch wax-up for treatment planning.',         barStart:6, barEnd:7 },
+  {id:10,name:'Robert Vasquez',   dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 1',dateSubmitted:toISO(addD(today,-6)),dateScheduled:toISO(addD(today,1)), apptTime:'16:00',dur:60, followUpDate:'',insertionDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A3', scanner:'iTero',          fabricationNeeded:true, notes:'#14 PFM. Pre-cementation check done.',             barStart:1, barEnd:2 },
+  {id:11,name:'Emily Chen',       dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 2',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,-2)), apptTime:'09:00',dur:60, followUpDate:'',insertionDate:toISO(addD(today,-2)),status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Delivered 2 days ago.',                           barStart:-2, barEnd:-1 },
+  {id:12,name:'John Smith',       dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,-1)), apptTime:'14:00',dur:60, followUpDate:'',insertionDate:toISO(addD(today,-1)),status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Bridge (3-unit)',      shade:'B1', scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'Delivered yesterday.',                             barStart:-1, barEnd:0 },
 ];
 
 let scaleDays = 7, activeId = null, currentTab = 'gantt';
@@ -1334,6 +1340,7 @@ function createNewCaseFromModal() {
     apptTime: document.getElementById('ncmTime').value || '',
     dur: parseInt(document.getElementById('ncmDuration').value),
     followUpDate: '',
+    insertionDate: '',
     status: newCaseModalData.status || 'waiting-submit',
     waitReason: '',
     priority: 'normal',
@@ -1680,12 +1687,24 @@ function renderChart() {
           // Format procedure name - remove parentheses, abbreviate if needed
           let procName = p.procedure.replace(/\s*\([^)]*\)/g, '').trim();
           
+          // Missing-date warning indicators
+          const followUpExpected = ['delivered','ready-insert','received','needs-approval'].includes(p.status);
+          const insertionExpected = ['ready-insert','received','needs-approval'].includes(p.status);
+          const missingFollowUp = followUpExpected && !p.followUpDate;
+          const missingInsertion = insertionExpected && !p.insertionDate;
+
           // Build bar content
           let barContent = `<span class="bar-label" title="${p.procedure}">${procName}</span>`;
           if (span > 1) {
             barContent += `<span class="bar-days">+${daysUntil}</span>`;
           }
-          
+          if (missingInsertion) {
+            barContent += `<span class="bar-warn bar-warn-insert" title="Missing insertion date">▲</span>`;
+          }
+          if (missingFollowUp) {
+            barContent += `<span class="bar-warn bar-warn-followup" title="Missing follow-up date">●</span>`;
+          }
+
           bar.className=`appt-bar`+(activeId===p.id?' active':'');
           bar.style.cssText=`left:calc(${(visibleStart/scaleDays)*100}% + 5px);width:calc(${(visibleSpan/scaleDays)*100}% - 10px);position:absolute;background:${procColor.bg};border:1px solid ${procColor.border};color:${procColor.text};${urgencyColor ? `border-left:4px solid ${urgencyColor};` : ''}`;
           bar.innerHTML=barContent;
@@ -1930,6 +1949,7 @@ function openDrawer(id) {
   document.getElementById('eApptTime').value=p.apptTime||'09:00';
   document.getElementById('eDuration').value=p.dur||60;
   document.getElementById('eFollowUpDate').value=p.followUpDate||'';
+  document.getElementById('eInsertionDate').value=p.insertionDate||'';
   document.getElementById('eProcedure').value=p.procedure;
   document.getElementById('eShade').value=p.shade;
   document.getElementById('eScanner').value=p.scanner;
@@ -1998,6 +2018,7 @@ function saveCase(){
   p.apptTime=document.getElementById('eApptTime').value;
   p.dur=parseInt(document.getElementById('eDuration').value);
   p.followUpDate=document.getElementById('eFollowUpDate').value;
+  p.insertionDate=document.getElementById('eInsertionDate').value;
   p.procedure=document.getElementById('eProcedure').value;
   p.shade=document.getElementById('eShade').value;
   p.scanner=document.getElementById('eScanner').value;
@@ -2036,6 +2057,28 @@ function deleteCase(){
 function renderHuddle(){
   const body=document.getElementById('huddleBody'); body.innerHTML='';
   const weekAgo=toISO(addD(today,-7));
+  const todayISO=toISO(today);
+
+  // Operational/action-oriented buckets
+  const followUpExpectedStatuses=['delivered','ready-insert','received','needs-approval'];
+  const insertionExpectedStatuses=['ready-insert','received','needs-approval'];
+  const returnFromLabStatuses=['ready-insert','received','needs-approval'];
+  const pastSubmissionStatuses=['submitted','in-house','received','needs-approval','ready-insert','delivered'];
+
+  const missingFollowUp=cases.filter(x=>!x.followUpDate && followUpExpectedStatuses.includes(x.status));
+  const missingInsertion=cases.filter(x=>!x.insertionDate && returnFromLabStatuses.includes(x.status));
+  const todayActions=cases.filter(x=>x.dateScheduled===todayISO || x.followUpDate===todayISO || x.insertionDate===todayISO);
+
+  // Aging: cases past submission, not delivered, with dateSubmitted older than 7 days
+  const aging=cases.filter(x=>{
+    if(x.status==='delivered'||x.status==='waiting-submit') return false;
+    if(!x.dateSubmitted) return false;
+    const ageDays=Math.round((today-new Date(x.dateSubmitted+'T00:00:00'))/86400000);
+    return ageDays>=7;
+  }).map(x=>({...x,_age:Math.round((today-new Date(x.dateSubmitted+'T00:00:00'))/86400000)}))
+    .sort((a,b)=>b._age-a._age);
+
+  // Existing summary buckets (kept, reordered below actionable items)
   const outstanding=cases.filter(x=>x.status!=='delivered');
   const returnedTW=cases.filter(x=>x.caseReturned&&x.dateSubmitted>=weekAgo);
   const needsApproval=cases.filter(x=>x.review!=='none');
@@ -2043,28 +2086,61 @@ function renderHuddle(){
   const highPri=cases.filter(x=>x.priority==='high');
   const readyIns=cases.filter(x=>x.status==='ready-insert');
 
-  function card(icon,title,sub,stat,sc,listItems){
-    const c=document.createElement('div'); c.className='huddle-card';
+  function card(icon,title,sub,stat,sc,listItems,emphasize){
+    const c=document.createElement('div'); c.className='huddle-card'+(emphasize?' huddle-card-action':'');
     c.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">${icon}</div><div><div class="huddle-card-title">${title}</div><div class="huddle-card-sub">${sub}</div></div></div>
     <div class="huddle-stat" style="color:${sc}">${stat}</div>
     <div class="huddle-list">${listItems.map(item=>`<div class="huddle-item"><div><div class="hi-name">${item.name}</div><div class="hi-sub">${item.sub}</div></div><span class="hi-badge" style="background:${item.bc};color:${item.tc}">${item.tag}</span></div>`).join('')}${listItems.length===0?`<div style="font-size:11px;color:var(--text-muted);padding:6px 0">None at this time</div>`:''}</div>`;
     return c;
   }
-  body.appendChild(card('⏳','Cases Outstanding','Active lab cases not yet delivered',outstanding.length,'var(--amber)',
-    outstanding.slice(0,6).map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:x.status==='needs-approval'?'rgba(255,107,107,.15)':x.status==='submitted'?'rgba(245,158,11,.15)':'rgba(52,211,153,.1)',tc:x.status==='needs-approval'?'var(--coral)':x.status==='submitted'?'var(--amber)':'var(--green)'}))));
+
+  // Section header helper
+  function sectionHeader(label){
+    const h=document.createElement('div');
+    h.className='huddle-section-hdr';
+    h.textContent=label;
+    body.appendChild(h);
+  }
+
+  // ── ACTION REQUIRED (top of huddle board) ──
+  sectionHeader('Needs your attention');
+
+  body.appendChild(card('📅','Today’s actions needed','Appointments, follow-ups, or insertions scheduled today',todayActions.length,'var(--sky)',
+    todayActions.map(x=>{
+      const tags=[];
+      if(x.dateScheduled===todayISO) tags.push('Appt');
+      if(x.followUpDate===todayISO) tags.push('Follow-up');
+      if(x.insertionDate===todayISO) tags.push('Insert');
+      return {name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}${x.apptTime?' · '+x.apptTime:''}`,tag:tags.join(' / '),bc:'rgba(56,189,248,.15)',tc:'var(--sky)'};
+    }), true));
+
+  body.appendChild(card('⏰','Missing follow-up dates','Cases past submission with no follow-up scheduled',missingFollowUp.length,'var(--amber)',
+    missingFollowUp.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist} · ${STATUS_CFG[x.status]?.label||x.status}`,tag:'No follow-up',bc:'rgba(245,158,11,.18)',tc:'var(--amber)'})), true));
+
+  body.appendChild(card('🪥','Missing insertion dates','Cases returning from lab with no insertion date',missingInsertion.length,'var(--coral)',
+    missingInsertion.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist} · ${STATUS_CFG[x.status]?.label||x.status}`,tag:'No insert date',bc:'rgba(255,107,107,.18)',tc:'var(--coral)'})), true));
+
+  body.appendChild(card('🐢','Overdue / aging','Open cases sitting in current status 7+ days',aging.length,'var(--coral)',
+    aging.slice(0,8).map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${STATUS_CFG[x.status]?.label||x.status} · submitted ${x.dateSubmitted}`,tag:`${x._age}d`,bc:x._age>=14?'rgba(255,107,107,.2)':'rgba(245,158,11,.18)',tc:x._age>=14?'var(--coral)':'var(--amber)'})), true));
+
+  // ── PIPELINE OVERVIEW ──
+  sectionHeader('Pipeline overview');
+
+  body.appendChild(card('⚠️','Approvals Needed','Provider action required before insert',needsApproval.length,'var(--coral)',
+    needsApproval.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
+  body.appendChild(card('🔴','High Priority','Cases flagged as urgent',highPri.length,'var(--coral)',
+    highPri.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
   body.appendChild(card('✅','Ready for Insert','Cases cleared and ready for seating',readyIns.length,'var(--green)',
     readyIns.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:'Ready',bc:'rgba(52,211,153,.15)',tc:'var(--green)'}))));
   body.appendChild(card('📦','Returned This Week','Lab cases received back in office',returnedTW.length,'var(--sky)',
     returnedTW.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review!=='none'?'Needs Review':'OK',bc:x.review!=='none'?'rgba(255,107,107,.15)':'rgba(52,211,153,.1)',tc:x.review!=='none'?'var(--coral)':'var(--green)'}))));
-  body.appendChild(card('⚠️','Approvals Needed','Provider action required before insert',needsApproval.length,'var(--coral)',
-    needsApproval.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
+  body.appendChild(card('⏳','Cases Outstanding','Active lab cases not yet delivered',outstanding.length,'var(--amber)',
+    outstanding.slice(0,6).map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:x.status==='needs-approval'?'rgba(255,107,107,.15)':x.status==='submitted'?'rgba(245,158,11,.15)':'rgba(52,211,153,.1)',tc:x.status==='needs-approval'?'var(--coral)':x.status==='submitted'?'var(--amber)':'var(--green)'}))));
   body.appendChild(card('◌','Waiting to Submit','Cases not yet sent to lab',waitSub.length,'var(--text-muted)',
     waitSub.map(x=>({name:x.name,sub:x.waitReason||'Reason not specified',tag:x.priority==='high'?'High':'Normal',bc:x.priority==='high'?'rgba(255,107,107,.15)':'rgba(74,122,155,.1)',tc:x.priority==='high'?'var(--coral)':'var(--text-muted)'}))));
-  body.appendChild(card('🔴','High Priority','Cases flagged as urgent',highPri.length,'var(--coral)',
-    highPri.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
 
   const lc=document.createElement('div'); lc.className='huddle-card';
-  lc.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">🎨</div><div><div class="huddle-card-title">Bar Color Legend</div><div class="huddle-card-sub">Status reference</div></div></div>
+  lc.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">🎨</div><div><div class="huddle-card-title">Bar Color Legend</div><div class="huddle-card-sub">Status reference · ▲ missing insertion date · ● missing follow-up</div></div></div>
   <div class="legend-wrap">${Object.entries(STATUS_CFG).map(([,c])=>`<div class="legend-item"><div class="legend-dot" style="background:${c.agColor[1]}"></div><span class="legend-label">${c.icon} ${c.label}</span></div>`).join('')}</div>`;
   body.appendChild(lc);
 }
