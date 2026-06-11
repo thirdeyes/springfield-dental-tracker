@@ -188,6 +188,9 @@ body[data-theme="light"] .appt-bar.resizing::before{background:var(--panel-bg);b
 .bar-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;pointer-events:none}
 .bar-days{font-size:9px;font-weight:700;padding:2px 5px;background:rgba(0,0,0,.15);border-radius:3px;margin-left:4px;flex-shrink:0;pointer-events:none}
 body[data-theme="light"] .bar-days{background:rgba(0,0,0,.1)}
+.bar-warn{font-size:10px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;flex-shrink:0;margin-left:3px;pointer-events:auto;cursor:help;display:inline-flex;align-items:center;justify-content:center;min-width:14px;height:14px}
+.bar-warn-followup{background:rgba(245,158,11,.85);color:#1a1a1a;box-shadow:0 0 0 1px rgba(245,158,11,.4)}
+.bar-warn-insert{background:rgba(255,107,107,.9);color:#fff;box-shadow:0 0 0 1px rgba(255,107,107,.5)}
 .bar-resize-handle{position:absolute;top:0;bottom:0;width:10px;z-index:5;opacity:0;transition:opacity .15s}
 .appt-bar:hover .bar-resize-handle{opacity:.6}
 .bar-resize-handle:hover{opacity:1!important}
@@ -1149,7 +1152,7 @@ body[data-theme="light"] .metric-sec-lbl{color:#0a8f88}
         </div>
         <div class="f-row">
           <div class="f-grp"><div class="f-lbl">Follow-up Date</div><input class="f-inp" type="date" id="eFollowUpDate"/></div>
-          <div class="f-grp-placeholder"></div>
+          <div class="f-grp"><div class="f-lbl">Insertion Date</div><input class="f-inp" type="date" id="eInsertionDate"/></div>
         </div>
       </div>
 
@@ -1369,18 +1372,18 @@ const fmt12 = h=>{const s=h%12||12;const m=h>=12?'PM':'AM';return `${s}${m}`};
 // DATA
 // ═══════════════════════════════════════════════════════
 let cases = [
-  {id:1, name:'Margaret Holloway',dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 1',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,2)), apptTime:'09:00',dur:60, followUpDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (Full Zirconia)', shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Upper right #3. Reduce occlusal slightly.',        barStart:2, barEnd:3 },
-  {id:2, name:'James Okafor',     dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 2',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,4)), apptTime:'11:00',dur:60, followUpDate:'',status:'waiting-submit',waitReason:'Waiting — shade confirmation needed',priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'FPD / Bridge (3-unit)',  shade:'B1', scanner:'PVS Impression', fabricationNeeded:true, notes:'Bridge #12–#14. Shade photo sent.',                barStart:4, barEnd:5 },
-  {id:3, name:'Sophia Reinholt',  dentist:'Dr. Novak',assistant:'Jamie L.',room:'Chair 3', dateSubmitted:toISO(addD(today,-7)),dateScheduled:toISO(addD(today,1)), apptTime:'14:00',dur:90, followUpDate:'',status:'needs-approval',waitReason:'', priority:'high',  caseReturned:true, review:'approval', archive:'14',procedure:'Veneer',              shade:'BL2',scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'#8–#10 veneers. Contact before delivery.',         barStart:1, barEnd:2 },
-  {id:4, name:'Carlos Mendez',    dentist:'Dr. Reyes', assistant:'Sarah K.',room:'Suite 1',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,3)), apptTime:'08:30',dur:60, followUpDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (E.max / All-Ceramic)',shade:'D3',scanner:'iTero',          fabricationNeeded:true, notes:'Lower molar #19. Patient on blood thinners.',      barStart:3, barEnd:4 },
-  {id:5, name:'Anika Patel',      dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-5)),dateScheduled:toISO(today),          apptTime:'10:00',dur:60, followUpDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'try-in',   archive:'7', procedure:'Implant Crown',     shade:'A1', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Nobel RP platform. Final seating today.',          barStart:0, barEnd:1 },
-  {id:6, name:'Thomas Brandt',    dentist:'Dr. Reyes', assistant:'Mike R.', room:'Suite 2',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,5)), apptTime:'13:30',dur:60, followUpDate:'',status:'received',     waitReason:'', priority:'normal',caseReturned:true, review:'approval', archive:'14',procedure:'Partial Denture (RPD)',shade:'',   scanner:'PVS Impression', fabricationNeeded:true, notes:'Lower RPD. Try-in confirmed for Fri.',             barStart:5, barEnd:6 },
-  {id:7, name:'Priya Nair',       dentist:'Dr. Osei',  assistant:'Jamie L.',room:'Chair 4',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,8)), apptTime:'09:30',dur:60, followUpDate:'',status:'waiting-submit',waitReason:'Waiting — insurance approval',priority:'normal',caseReturned:false,review:'none',  archive:'14',procedure:'Occlusal Guard (Hard)',shade:'',  scanner:'Medit i500',     fabricationNeeded:true, notes:'3mm hard acrylic. Bruxism Rx.',                    barStart:8, barEnd:9 },
-  {id:8, name:'David Fontaine',   dentist:'Dr. Osei',  assistant:'Sarah K.',room:'Suite 2',dateSubmitted:toISO(addD(today,-9)),dateScheduled:toISO(addD(today,2)), apptTime:'11:30',dur:90, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Complete Denture (Upper)',shade:'', scanner:'PVS Impression', fabricationNeeded:true, notes:'Conventional complete denture. Delivered last visit.',barStart:2, barEnd:3},
-  {id:9, name:'Layla Osei',       dentist:'Dr. Osei',  assistant:'Tom B.',  room:'Chair 4',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,6)), apptTime:'15:00',dur:60, followUpDate:'',status:'in-house',     waitReason:'', priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'Diagnostic Wax-Up',   shade:'A3', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Full arch wax-up for treatment planning.',         barStart:6, barEnd:7 },
-  {id:10,name:'Robert Vasquez',   dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 1',dateSubmitted:toISO(addD(today,-6)),dateScheduled:toISO(addD(today,1)), apptTime:'16:00',dur:60, followUpDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A3', scanner:'iTero',          fabricationNeeded:true, notes:'#14 PFM. Pre-cementation check done.',             barStart:1, barEnd:2 },
-  {id:11,name:'Emily Chen',       dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 2',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,-2)), apptTime:'09:00',dur:60, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Delivered 2 days ago.',                           barStart:-2, barEnd:-1 },
-  {id:12,name:'John Smith',       dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,-1)), apptTime:'14:00',dur:60, followUpDate:'',status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Bridge (3-unit)',      shade:'B1', scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'Delivered yesterday.',                             barStart:-1, barEnd:0 },
+  {id:1, name:'Margaret Holloway',dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 1',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,2)), apptTime:'09:00',dur:60, followUpDate:'',insertionDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (Full Zirconia)', shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Upper right #3. Reduce occlusal slightly.',        barStart:2, barEnd:3 },
+  {id:2, name:'James Okafor',     dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 2',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,4)), apptTime:'11:00',dur:60, followUpDate:'',insertionDate:'',status:'waiting-submit',waitReason:'Waiting — shade confirmation needed',priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'FPD / Bridge (3-unit)',  shade:'B1', scanner:'PVS Impression', fabricationNeeded:true, notes:'Bridge #12–#14. Shade photo sent.',                barStart:4, barEnd:5 },
+  {id:3, name:'Sophia Reinholt',  dentist:'Dr. Novak',assistant:'Jamie L.',room:'Chair 3', dateSubmitted:toISO(addD(today,-7)),dateScheduled:toISO(addD(today,1)), apptTime:'14:00',dur:90, followUpDate:'',insertionDate:'',status:'needs-approval',waitReason:'', priority:'high',  caseReturned:true, review:'approval', archive:'14',procedure:'Veneer',              shade:'BL2',scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'#8–#10 veneers. Contact before delivery.',         barStart:1, barEnd:2 },
+  {id:4, name:'Carlos Mendez',    dentist:'Dr. Reyes', assistant:'Sarah K.',room:'Suite 1',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,3)), apptTime:'08:30',dur:60, followUpDate:'',insertionDate:'',status:'submitted',    waitReason:'', priority:'normal',caseReturned:false,review:'none',     archive:'14',procedure:'Crown (E.max / All-Ceramic)',shade:'D3',scanner:'iTero',          fabricationNeeded:true, notes:'Lower molar #19. Patient on blood thinners.',      barStart:3, barEnd:4 },
+  {id:5, name:'Anika Patel',      dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-5)),dateScheduled:toISO(today),          apptTime:'10:00',dur:60, followUpDate:'',insertionDate:toISO(today),status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'try-in',   archive:'7', procedure:'Implant Crown',     shade:'A1', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Nobel RP platform. Final seating today.',          barStart:0, barEnd:1 },
+  {id:6, name:'Thomas Brandt',    dentist:'Dr. Reyes', assistant:'Mike R.', room:'Suite 2',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,5)), apptTime:'13:30',dur:60, followUpDate:'',insertionDate:'',status:'received',     waitReason:'', priority:'normal',caseReturned:true, review:'approval', archive:'14',procedure:'Partial Denture (RPD)',shade:'',   scanner:'PVS Impression', fabricationNeeded:true, notes:'Lower RPD. Try-in confirmed for Fri.',             barStart:5, barEnd:6 },
+  {id:7, name:'Priya Nair',       dentist:'Dr. Osei',  assistant:'Jamie L.',room:'Chair 4',dateSubmitted:toISO(addD(today,-1)),dateScheduled:toISO(addD(today,8)), apptTime:'09:30',dur:60, followUpDate:'',insertionDate:'',status:'waiting-submit',waitReason:'Waiting — insurance approval',priority:'normal',caseReturned:false,review:'none',  archive:'14',procedure:'Occlusal Guard (Hard)',shade:'',  scanner:'Medit i500',     fabricationNeeded:true, notes:'3mm hard acrylic. Bruxism Rx.',                    barStart:8, barEnd:9 },
+  {id:8, name:'David Fontaine',   dentist:'Dr. Osei',  assistant:'Sarah K.',room:'Suite 2',dateSubmitted:toISO(addD(today,-9)),dateScheduled:toISO(addD(today,2)), apptTime:'11:30',dur:90, followUpDate:'',insertionDate:toISO(addD(today,-2)),status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Complete Denture (Upper)',shade:'', scanner:'PVS Impression', fabricationNeeded:true, notes:'Conventional complete denture. Delivered last visit.',barStart:2, barEnd:3},
+  {id:9, name:'Layla Osei',       dentist:'Dr. Osei',  assistant:'Tom B.',  room:'Chair 4',dateSubmitted:toISO(addD(today,-2)),dateScheduled:toISO(addD(today,6)), apptTime:'15:00',dur:60, followUpDate:'',insertionDate:'',status:'in-house',     waitReason:'', priority:'high',  caseReturned:false,review:'none',     archive:'14',procedure:'Diagnostic Wax-Up',   shade:'A3', scanner:'3Shape TRIOS',   fabricationNeeded:false,notes:'Full arch wax-up for treatment planning.',         barStart:6, barEnd:7 },
+  {id:10,name:'Robert Vasquez',   dentist:'Dr. Novak',assistant:'Mike R.',  room:'Chair 1',dateSubmitted:toISO(addD(today,-6)),dateScheduled:toISO(addD(today,1)), apptTime:'16:00',dur:60, followUpDate:'',insertionDate:'',status:'ready-insert',  waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A3', scanner:'iTero',          fabricationNeeded:true, notes:'#14 PFM. Pre-cementation check done.',             barStart:1, barEnd:2 },
+  {id:11,name:'Emily Chen',       dentist:'Dr. Novak',assistant:'Sarah K.', room:'Chair 2',dateSubmitted:toISO(addD(today,-3)),dateScheduled:toISO(addD(today,-2)), apptTime:'09:00',dur:60, followUpDate:'',insertionDate:toISO(addD(today,-2)),status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Crown (PFM)',           shade:'A2', scanner:'iTero',          fabricationNeeded:true, notes:'Delivered 2 days ago.',                           barStart:-2, barEnd:-1 },
+  {id:12,name:'John Smith',       dentist:'Dr. Reyes', assistant:'Tom B.',  room:'Suite 1',dateSubmitted:toISO(addD(today,-4)),dateScheduled:toISO(addD(today,-1)), apptTime:'14:00',dur:60, followUpDate:'',insertionDate:toISO(addD(today,-1)),status:'delivered',    waitReason:'', priority:'normal',caseReturned:true, review:'none',     archive:'14',procedure:'Bridge (3-unit)',      shade:'B1', scanner:'3Shape TRIOS',   fabricationNeeded:true, notes:'Delivered yesterday.',                             barStart:-1, barEnd:0 },
 ];
 
 let scaleDays = 7, activeId = null, currentTab = 'gantt';
@@ -1562,6 +1565,7 @@ function createNewCaseFromModal() {
     apptTime: document.getElementById('ncmTime').value || '',
     dur: parseInt(document.getElementById('ncmDuration').value),
     followUpDate: '',
+    insertionDate: '',
     status: newCaseModalData.status || 'waiting-submit',
     waitReason: '',
     priority: 'normal',
@@ -1895,11 +1899,19 @@ function renderChart() {
           // Format procedure name - remove parentheses, abbreviate if needed
           let procName = p.procedure.replace(/\s*\([^)]*\)/g, '').trim();
 
-          // Build bar content: procedure dot + name + remaining-items badge
+          // Missing-date warning indicators (status-aware)
+          const followUpExpected = ['delivered','ready-insert','received','needs-approval'].includes(p.status);
+          const insertionExpected = ['ready-insert','received','needs-approval'].includes(p.status);
+          const missingFollowUp = followUpExpected && !p.followUpDate;
+          const missingInsertion = insertionExpected && !p.insertionDate;
+
+          // Build bar content: procedure dot + name + remaining-items badge + warnings
           const badge = remaining === 0 ? '✓' : `${remaining} left`;
           let barContent = `<span class="bar-proc-dot" style="background:${procColor.border}"></span>` +
                            `<span class="bar-label" title="${p.procedure} — ${RAG_LABEL[rag]}">${procName}</span>` +
                            `<span class="bar-days">${badge}</span>`;
+          if (missingInsertion) barContent += `<span class="bar-warn bar-warn-insert" title="Missing insertion date">▲</span>`;
+          if (missingFollowUp)  barContent += `<span class="bar-warn bar-warn-followup" title="Missing follow-up date">●</span>`;
 
           bar.className=`appt-bar bar-rag-${rag}`+(activeId===p.id?' active':'');
           bar.style.cssText=`left:calc(${(visibleStart/scaleDays)*100}% + 5px);width:calc(${(visibleSpan/scaleDays)*100}% - 10px);position:absolute`;
@@ -2145,6 +2157,7 @@ function openDrawer(id) {
   document.getElementById('eApptTime').value=p.apptTime||'09:00';
   document.getElementById('eDuration').value=p.dur||60;
   document.getElementById('eFollowUpDate').value=p.followUpDate||'';
+  document.getElementById('eInsertionDate').value=p.insertionDate||'';
   document.getElementById('eProcedure').value=p.procedure;
   document.getElementById('eShade').value=p.shade;
   document.getElementById('eScanner').value=p.scanner;
@@ -2229,6 +2242,7 @@ function saveCase(){
   p.apptTime=document.getElementById('eApptTime').value;
   p.dur=parseInt(document.getElementById('eDuration').value);
   p.followUpDate=document.getElementById('eFollowUpDate').value;
+  p.insertionDate=document.getElementById('eInsertionDate').value;
   p.procedure=document.getElementById('eProcedure').value;
   p.shade=document.getElementById('eShade').value;
   p.scanner=document.getElementById('eScanner').value;
@@ -2272,6 +2286,11 @@ function deleteCase(){
 // ═══════════════════════════════════════════════════════
 // Days from today to a case's appointment
 function daysUntilAppt(p){ return Math.round((new Date(p.dateScheduled+'T00:00:00') - today) / 86400000); }
+// Operational signals (carried over from the insertion-date work)
+function caseAgeDays(p){ return p.dateSubmitted ? Math.round((today - new Date(p.dateSubmitted+'T00:00:00')) / 86400000) : 0; }
+function isAging(p){ return p.status!=='delivered' && p.status!=='waiting-submit' && caseAgeDays(p) >= 7; }
+function missingFollowUp(p){ return ['delivered','ready-insert','received','needs-approval'].includes(p.status) && !p.followUpDate; }
+function missingInsertion(p){ return ['ready-insert','received','needs-approval'].includes(p.status) && !p.insertionDate; }
 
 // One compact case row with RAG dot + flag icons
 function huddleCaseRow(p){
@@ -2279,11 +2298,15 @@ function huddleCaseRow(p){
   const remaining = ensureChecklist(p).filter(i=>!i.done).length;
   const d = daysUntilAppt(p);
   const dueTxt = d===0 ? 'today' : d<0 ? `${-d}d ago` : `in ${d}d`;
+  const age = caseAgeDays(p);
   let flags = '';
-  if (p.priority==='high')          flags += `<span class="h-flag" title="High priority">🔴</span>`;
-  if (p.review && p.review!=='none')flags += `<span class="h-flag" title="Needs ${p.review}">⚠️</span>`;
-  if (remaining>0)                  flags += `<span class="h-flag" title="${remaining} status item(s) unchecked" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted)">☐ ${remaining}</span>`;
-  if (p.caseReturned)               flags += `<span class="h-flag" title="Returned from lab">↩️</span>`;
+  if (p.priority==='high')           flags += `<span class="h-flag" title="High priority">🔴</span>`;
+  if (p.review && p.review!=='none') flags += `<span class="h-flag" title="Needs ${p.review}">⚠️</span>`;
+  if (missingInsertion(p))           flags += `<span class="h-flag" title="Missing insertion date" style="color:var(--coral)">▲</span>`;
+  if (missingFollowUp(p))            flags += `<span class="h-flag" title="Missing follow-up date" style="color:var(--amber)">●</span>`;
+  if (remaining>0)                   flags += `<span class="h-flag" title="${remaining} status item(s) unchecked" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted)">☐ ${remaining}</span>`;
+  if (isAging(p))                    flags += `<span class="h-flag" title="Aging — ${age}d in current status" style="font-size:9px;font-family:'DM Mono',monospace;color:${age>=14?'var(--coral)':'var(--amber)'}">🐢${age}d</span>`;
+  if (p.caseReturned)                flags += `<span class="h-flag" title="Returned from lab">↩️</span>`;
   return `<div class="h-case" onclick="openDrawer(${p.id})">
     <div class="h-rag ${rag}" title="${RAG_LABEL[rag]}"></div>
     <div class="h-case-info">
@@ -2305,7 +2328,8 @@ function renderHuddle(){
                        .sort((a,b)=>daysUntilAppt(a)-daysUntilAppt(b));
   const needsAttn = cases.filter(p =>
         p.status!=='delivered' && daysUntilAppt(p)>=0 && p.dateScheduled!==todayISO &&
-        (computeRAG(p)==='red' || (p.review&&p.review!=='none') || p.status==='waiting-submit' || p.priority==='high'))
+        (computeRAG(p)==='red' || (p.review&&p.review!=='none') || p.status==='waiting-submit' ||
+         p.priority==='high' || missingFollowUp(p) || missingInsertion(p) || isAging(p)))
       .sort((a,b)=> ragRank[computeRAG(a)]-ragRank[computeRAG(b)] || daysUntilAppt(a)-daysUntilAppt(b));
   const history = cases.filter(p => p.status==='delivered')
                        .sort((a,b)=> b.dateScheduled.localeCompare(a.dateScheduled));
@@ -2329,7 +2353,10 @@ function renderHuddle(){
     <span class="lg-item"><span class="lg-dot" style="background:var(--coral)"></span>At Risk — ≤3d out, items missing</span>
     <span class="lg-item">🔴 High priority</span>
     <span class="lg-item">⚠️ Needs review</span>
+    <span class="lg-item" style="color:var(--coral)">▲ Missing insertion date</span>
+    <span class="lg-item" style="color:var(--amber)">● Missing follow-up date</span>
     <span class="lg-item">☐ Items unchecked</span>
+    <span class="lg-item">🐢 Aging 7d+</span>
     <span class="lg-item">↩️ Returned</span>
   </div>`;
 
