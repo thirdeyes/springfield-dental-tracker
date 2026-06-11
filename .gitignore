@@ -1,3 +1,8 @@
 .vercel
 
 .claude/
+
+# Local env files with real secrets — never commit (.env.example is safe & tracked)
+.env
+.env.local
+.env*.local
