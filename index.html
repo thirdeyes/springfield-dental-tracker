@@ -711,6 +711,111 @@ body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .legend-item{display:flex;align-items:center;gap:8px}
 .legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
 .legend-label{font-size:11px;color:var(--text-second)}
+
+/* ══════════════════════════════════════════════
+   RAG STATUS BARS (Schedule) — red / yellow / green
+══════════════════════════════════════════════ */
+.bar-rag-green {background:rgba(52,211,153,.5); border:1px solid rgba(52,211,153,.5); border-left:4px solid var(--green); color:#b0f5d8}
+.bar-rag-yellow{background:rgba(245,158,11,.5); border:1px solid rgba(245,158,11,.5); border-left:4px solid var(--amber); color:#fde8a0}
+.bar-rag-red   {background:rgba(255,107,107,.5);border:1px solid rgba(255,107,107,.5);border-left:4px solid var(--coral); color:#ffd0d0}
+body[data-theme="light"] .bar-rag-green {background:rgba(5,150,105,.32); border:1px solid rgba(5,150,105,.35); border-left:4px solid #059669; color:#064e3b}
+body[data-theme="light"] .bar-rag-yellow{background:rgba(217,119,6,.32); border:1px solid rgba(217,119,6,.35); border-left:4px solid #d97706; color:#7c3e03}
+body[data-theme="light"] .bar-rag-red   {background:rgba(220,53,69,.32); border:1px solid rgba(220,53,69,.35); border-left:4px solid #dc3545; color:#7a1d26}
+.bar-proc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;pointer-events:none;box-shadow:0 0 0 1.5px rgba(255,255,255,.25)}
+
+/* RAG pill — uniform status indicator */
+.rag-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:11px;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;vertical-align:middle}
+.rag-pill.green {background:rgba(52,211,153,.15); color:var(--green); border:1px solid rgba(52,211,153,.3)}
+.rag-pill.yellow{background:rgba(245,158,11,.15); color:var(--amber); border:1px solid rgba(245,158,11,.3)}
+.rag-pill.red   {background:rgba(255,107,107,.15);color:var(--coral); border:1px solid rgba(255,107,107,.3)}
+body[data-theme="light"] .rag-pill.green {color:#047857;border-color:rgba(5,150,105,.35)}
+body[data-theme="light"] .rag-pill.yellow{color:#b45309;border-color:rgba(217,119,6,.35)}
+body[data-theme="light"] .rag-pill.red   {color:#b91c1c;border-color:rgba(220,53,69,.35)}
+
+/* ══════════════════════════════════════════════
+   CHECKLIST — quick-editable lab status items
+══════════════════════════════════════════════ */
+.checklist{display:flex;flex-direction:column;gap:2px}
+.check-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:6px;cursor:pointer;transition:background .12s;user-select:none}
+.check-item:hover{background:var(--row-hover)}
+.check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s;color:transparent;font-size:10px;font-weight:800;line-height:1}
+.check-item.done .check-box{background:var(--green);border-color:var(--green);color:#fff}
+.check-item.done .check-text{color:var(--text-muted);text-decoration:line-through;text-decoration-color:var(--text-muted)}
+.check-text{font-size:11.5px;color:var(--text-muted);transition:color .12s}
+.check-item:not(.done) .check-text{color:var(--text-primary)}
+body[data-theme="light"] .check-item.done .check-box{color:#fff}
+
+/* ══════════════════════════════════════════════
+   HUDDLE — consolidated 3-column layout
+══════════════════════════════════════════════ */
+.huddle-body{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0;gap:0}
+.huddle-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:18px 18px 0;overflow:hidden;min-height:0}
+.huddle-col{display:flex;flex-direction:column;min-height:0;background:var(--panel-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.huddle-col-hd{flex-shrink:0;padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.huddle-col-hd .hc-icon{font-size:16px;line-height:1}
+.huddle-col-hd .hc-title{font-size:12px;font-weight:600;letter-spacing:.02em}
+.huddle-col-hd .hc-count{margin-left:auto;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;padding:2px 9px;border-radius:10px}
+.huddle-col-body{flex:1;overflow-y:auto;padding:6px 10px 12px;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.h-case{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border)}
+.h-case:last-child{border-bottom:none}
+.h-case:hover{background:var(--row-hover)}
+.h-rag{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.h-rag.green{background:var(--green)} .h-rag.yellow{background:var(--amber)} .h-rag.red{background:var(--coral)}
+.h-case-info{flex:1;min-width:0}
+.h-case-name{font-size:12px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-case-sub{font-size:10px;color:var(--text-muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-flags{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.h-flag{font-size:12px;line-height:1;cursor:help}
+.h-empty{font-size:11px;color:var(--text-muted);padding:14px 8px;text-align:center}
+.huddle-secondary{flex-shrink:0;padding:14px 18px 6px}
+.huddle-sec-card{background:var(--panel-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.huddle-sec-hd{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.huddle-sec-hd .hs-icon{font-size:14px}
+.huddle-sec-hd .hs-title{font-size:11px;font-weight:600}
+.huddle-sec-hd .hs-count{margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--border);padding:2px 7px;border-radius:8px}
+.huddle-sec-body{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.h-hist{flex-shrink:0;min-width:170px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;transition:border-color .12s}
+.h-hist:hover{border-color:var(--teal)}
+.h-hist-name{font-size:11px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-hist-sub{font-size:9px;color:var(--text-muted);margin-top:2px;font-family:'DM Mono',monospace}
+.huddle-legend-bar{flex-shrink:0;display:flex;align-items:center;gap:18px;padding:10px 20px;border-top:1px solid var(--border);background:var(--panel-bg);flex-wrap:wrap}
+.huddle-legend-bar .lg-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.huddle-legend-bar .lg-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-second)}
+.huddle-legend-bar .lg-dot{width:9px;height:9px;border-radius:50%}
+
+/* ══════════════════════════════════════════════
+   LAB PORTALS TAB
+══════════════════════════════════════════════ */
+.portals-body{flex:1;overflow-y:auto;padding:28px;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.portals-intro{max-width:1100px;margin:0 auto 20px;display:flex;align-items:flex-start;gap:12px}
+.portals-intro h2{font-size:18px;font-weight:600;color:var(--text-primary)}
+.portals-intro p{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5}
+.portals-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.portal-card{display:flex;align-items:center;gap:14px;background:var(--panel-bg);border:1px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;text-decoration:none;transition:all .16s;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.portal-card:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+body[data-theme="light"] .portal-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.portal-logo{width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+.portal-info{flex:1;min-width:0}
+.portal-name{font-size:13px;font-weight:600;color:var(--text-primary)}
+.portal-sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+.portal-url{font-size:9px;color:var(--text-second);margin-top:3px;font-family:'DM Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.portal-arrow{color:var(--text-muted);flex-shrink:0;transition:color .15s,transform .15s}
+.portal-card:hover .portal-arrow{color:var(--teal);transform:translateX(3px)}
+
+/* ══════════════════════════════════════════════
+   METRICS SNAPSHOT
+══════════════════════════════════════════════ */
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metric-tile{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px}
+.metric-tile .mt-num{font-size:26px;font-weight:600;line-height:1;letter-spacing:-.01em}
+.metric-tile .mt-lbl{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-top:6px}
+.metric-sec-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin:4px 0 2px}
+body[data-theme="light"] .metric-sec-lbl{color:#0a8f88}
+.metric-bar-row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.metric-bar-row .mb-lbl{font-size:11px;color:var(--text-second);width:130px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric-bar-track{flex:1;height:8px;background:var(--input-bg);border-radius:4px;overflow:hidden}
+.metric-bar-fill{height:100%;border-radius:4px}
+.metric-bar-row .mb-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-primary);width:26px;text-align:right;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -729,15 +834,16 @@ body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
   <!-- CENTER: Tab Navigation -->
   <div class="hd-center">
     <div class="tab-nav">
-      <button class="tab-btn active"  onclick="switchTab('gantt')">📅 Schedule</button>
-      <button class="tab-btn"         onclick="switchTab('agenda')">🗓 Agenda</button>
-      <button class="tab-btn"         onclick="switchTab('huddle')">📋 Huddle</button>
+      <button class="tab-btn active"  data-tab="gantt"   onclick="switchTab('gantt')">📅 Schedule</button>
+      <button class="tab-btn"         data-tab="huddle"  onclick="switchTab('huddle')">📋 Huddle</button>
+      <button class="tab-btn"         data-tab="portals" onclick="switchTab('portals')">🔗 Lab Portals</button>
     </div>
   </div>
 
   <!-- RIGHT: Controls -->
   <div class="hd-right">
     <button class="btn btn-primary" onclick="createNewCase()" style="padding:6px 14px;font-size:11px;height:32px">+ New Case</button>
+    <button class="btn btn-ghost" onclick="openMetrics()" title="Monthly snapshot" style="padding:6px 12px;font-size:11px;height:32px">📊 Metrics</button>
     <div class="scale-toggle" id="scaleToggle">
       <button class="scale-btn active" data-days="7"  onclick="setScale(7)">1 Wk</button>
       <button class="scale-btn"        data-days="14" onclick="setScale(14)">2 Wk</button>
@@ -791,6 +897,11 @@ body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
   <!-- ════════ HUDDLE TAB ════════ -->
   <div class="tab-panel" id="tab-huddle">
     <div class="huddle-body" id="huddleBody"></div>
+  </div>
+
+  <!-- ════════ LAB PORTALS TAB ════════ -->
+  <div class="tab-panel" id="tab-portals">
+    <div class="portals-body" id="portalsBody"></div>
   </div>
 
   <!-- ════════ NEW CASE MODAL ════════ -->
@@ -892,6 +1003,23 @@ body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
     </div>
   </div>
 
+  <!-- ════════ METRICS SNAPSHOT MODAL ════════ -->
+  <div class="modal-overlay" id="metricsOverlay" onclick="closeMetrics(event)">
+    <div class="new-case-modal" style="width:560px;max-height:86vh;display:flex;flex-direction:column" onclick="event.stopPropagation()">
+      <div class="ncm-header">
+        <div>
+          <div class="ncm-title">📊 Monthly Snapshot</div>
+          <div id="metricsSubtitle" style="font-size:10px;color:var(--text-muted);margin-top:3px;font-family:'DM Mono',monospace"></div>
+        </div>
+        <button class="ncm-close" onclick="closeMetrics()">✕</button>
+      </div>
+      <div class="ncm-body" id="metricsBody" style="overflow-y:auto"></div>
+      <div class="ncm-footer">
+        <button class="ncm-btn ncm-btn-primary" onclick="closeMetrics()">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ════════ QUICK INFO BUBBLE ════════ -->
   <div class="info-bubble" id="infoBubble">
     <div class="ib-arrow" id="ibArrow"></div>
@@ -932,8 +1060,12 @@ body[data-theme="light"] .huddle-card{box-shadow:0 1px 3px rgba(0,0,0,.05)}
       <!-- Status at top -->
       <div class="d-section">
         <div class="s-lbl">Case Status</div>
+        <div class="f-grp" style="margin-bottom:14px">
+          <div class="f-lbl">Lab Checklist <span id="dChecklistRag" class="rag-pill"></span></div>
+          <div class="checklist" id="dChecklist"></div>
+        </div>
         <div class="f-grp" style="margin-bottom:10px">
-          <div class="f-lbl">Status</div>
+          <div class="f-lbl">Lifecycle Stage</div>
           <div class="status-chips" id="statusChips"></div>
           <div class="sub-field" id="waitReasonWrap">
             <select class="f-inp" id="eWaitReason">
@@ -1145,6 +1277,83 @@ function getUrgencyColor(daysUntil) {
   return '#fbbf24';                       // Yellow - 6+ days
 }
 
+// ═══════════════════════════════════════════════════════
+// STATUS-ITEM CHECKLISTS  (drive the RAG bar coloring)
+// ═══════════════════════════════════════════════════════
+// Coarse procedure family → used for default checklist + default lead time
+function getProcedureFamily(procedureName) {
+  const proc = (procedureName || '').toLowerCase();
+  if (proc.includes('denture') || proc.includes('rpd') || proc.includes('partial')) return 'removable';
+  if (proc.includes('guard') || proc.includes('appliance') || proc.includes('retainer') ||
+      proc.includes('bleaching') || proc.includes('tray') || proc.includes('mad') ||
+      proc.includes('wax-up') || proc.includes('wax up')) return 'appliance';
+  return 'fixed'; // crowns, bridges, implants, veneers, inlays/onlays, etc.
+}
+
+// Default checklist templates per family. Edit the wording here to match the practice.
+const CHECKLIST_TEMPLATES = {
+  fixed:     ['Shade & specs confirmed','Scan / impression sent','Submitted to lab','Received from lab','Provider approved','Ready to seat'],
+  removable: ['Impression sent','Try-in received','Try-in approved','Submitted for finish','Received from lab','Ready to deliver'],
+  appliance: ['Impression / scan sent','Submitted to lab','Received from lab','Ready to deliver'],
+};
+
+// Default lab lead time (days the status bar spans before the appointment)
+const LEAD_DAYS = { fixed: 21, removable: 28, appliance: 14 }; // 3 wks for most
+
+function getChecklistForProcedure(procedureName) {
+  const fam = getProcedureFamily(procedureName);
+  return CHECKLIST_TEMPLATES[fam].map(label => ({ label, done: false }));
+}
+function getLeadDays(procedureName) {
+  return LEAD_DAYS[getProcedureFamily(procedureName)] || 21;
+}
+
+// Ensure a case has a checklist that matches its procedure family
+function ensureChecklist(p) {
+  const expected = getChecklistForProcedure(p.procedure);
+  if (!Array.isArray(p.checklist) || p.checklist.length !== expected.length) {
+    p.checklist = expected;
+  }
+  return p.checklist;
+}
+
+// RAG: green = all items done; red = appt within 3 days & items missing; yellow otherwise
+function computeRAG(p) {
+  const items = ensureChecklist(p);
+  const allDone = items.length > 0 && items.every(i => i.done);
+  if (p.status === 'delivered' || allDone) return 'green';
+  const apptDate = new Date(p.dateScheduled + 'T00:00:00');
+  const daysUntil = Math.round((apptDate - today) / 86400000);
+  if (daysUntil <= 3 && !allDone) return 'red';
+  return 'yellow';
+}
+const RAG_LABEL = { green: 'On Track', yellow: 'In Progress', red: 'At Risk' };
+
+// Toggle a checklist item from anywhere (bubble, drawer) and refresh the views
+function toggleChecklistItem(caseId, idx) {
+  const p = cases.find(x => x.id === caseId);
+  if (!p) return;
+  const items = ensureChecklist(p);
+  if (!items[idx]) return;
+  items[idx].done = !items[idx].done;
+  if (infoBubbleCaseId === caseId) fillInfoBubble(p);          // refresh open bubble
+  if (activeId === caseId) renderDrawerChecklist(p);           // refresh open drawer
+  if (currentTab === 'gantt') renderChart();
+  if (currentTab === 'huddle') renderHuddle();
+}
+
+// ═══════════════════════════════════════════════════════
+// LAB PORTALS  (replace these placeholders with the real labs/URLs)
+// ═══════════════════════════════════════════════════════
+const LAB_PORTALS = [
+  { name: 'Glidewell Labs',        specialty: 'Crowns · Implants · Removable', url: 'https://www.glidewelldental.com',  color: '#00c9a7' },
+  { name: 'National Dentex (NDX)', specialty: 'Full-service network',          url: 'https://www.nationaldentex.com',   color: '#38bdf8' },
+  { name: 'Modern Dental',         specialty: 'Fixed & cosmetic',              url: 'https://www.moderndentalusa.com',  color: '#a78bfa' },
+  { name: 'Keating Dental Lab',    specialty: 'Crown & bridge',                url: 'https://www.keatingdentallab.com', color: '#f59e0b' },
+  { name: 'DDS Lab',               specialty: 'Implants · Dentures',           url: 'https://www.ddslab.com',           color: '#ec4899' },
+  { name: 'Burbank Dental Lab',    specialty: 'Cosmetic · Implant',            url: 'https://www.burbankdental.com',    color: '#fb923c' },
+];
+
 const AGENDA_START = 8;   // 8 AM
 const AGENDA_END   = 18;  // 6 PM
 const HOUR_PX      = 60;  // height per hour in agenda
@@ -1177,6 +1386,21 @@ let cases = [
 let scaleDays = 7, activeId = null, currentTab = 'gantt';
 let dateOffset = -1; // Always -1: selected date appears in 2nd column (1 day before shown)
 
+// Seed each demo case with a checklist, marking items done to reflect its lifecycle stage
+const STATUS_DONE_COUNT = {
+  'waiting-submit':1, 'submitted':2, 'in-house':3, 'received':4,
+  'needs-approval':4, 'ready-insert':99, 'delivered':99
+};
+cases.forEach(p => {
+  p.checklist = getChecklistForProcedure(p.procedure);
+  const done = STATUS_DONE_COUNT[p.status] ?? 1;
+  p.checklist.forEach((item, idx) => { item.done = idx < done; });
+  // Bar span = default lab lead time for this treatment type (3 wks for most).
+  // The bar's RIGHT edge anchors to the appointment; positions are recomputed on render.
+  p.barStart = 0;
+  p.barEnd = getLeadDays(p.procedure);
+});
+
 // ═══════════════════════════════════════════════════════
 // HEADER
 // ═══════════════════════════════════════════════════════
@@ -1201,15 +1425,16 @@ function changeViewDate(days) {
 // ═══════════════════════════════════════════════════════
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>
-    b.classList.toggle('active',['gantt','agenda','huddle'][i]===tab));
+  document.querySelectorAll('.tab-btn').forEach(b=>
+    b.classList.toggle('active', b.dataset.tab===tab));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('scaleToggle').style.visibility = tab==='gantt' ? 'visible' : 'hidden';
   // Always close drawer when switching tabs
   closeDrawer(true);
-  if (tab==='agenda') renderAgenda();
+  if (tab==='agenda') renderAgenda();   // kept for reference; no longer in the nav
   if (tab==='huddle') renderHuddle();
+  if (tab==='portals') renderPortals();
 }
 
 function setScale(days) {
@@ -1293,8 +1518,11 @@ function createNewCaseFromModal() {
   
   const newId = Math.max(...cases.map(x=>x.id), 0) + 1;
   const schedDate = new Date(date + 'T00:00:00');
-  const barStart = Math.round((schedDate - viewDate) / 86400000);
-  const barEnd = barStart + 5; // Default 5-day duration
+  const apptOffset = Math.round((schedDate - viewDate) / 86400000);
+  const procedure = document.getElementById('ncmProcedure').value;
+  const lead = getLeadDays(procedure);   // default bar span by treatment type
+  const barStart = apptOffset - lead;    // left edge = start of lab lead-up window
+  const barEnd = apptOffset;             // right edge = appointment day
   
   // Check for overlapping appointments with the same patient and move them
   const patientBars = cases.filter(x => x.name === name);
@@ -1340,11 +1568,12 @@ function createNewCaseFromModal() {
     caseReturned: false,
     review: 'none',
     archive: '14',
-    procedure: document.getElementById('ncmProcedure').value,
+    procedure: procedure,
     shade: '',
     scanner: '',
     fabricationNeeded: true,
     notes: '',
+    checklist: getChecklistForProcedure(procedure),
     barStart: barStart,
     barEnd: barEnd
   };
@@ -1378,10 +1607,22 @@ function showInfoBubble(caseId, clickEvent) {
   
   infoBubbleCaseId = caseId;
   const bubble = document.getElementById('infoBubble');
+
+  fillInfoBubble(p);
+
+  // Position the bubble near the click
+  positionInfoBubble(clickEvent);
+
+  // Show bubble
+  bubble.classList.add('visible');
+}
+
+// Populate the bubble's header + body for a case (also used to refresh after a toggle)
+function fillInfoBubble(p) {
   const i = cases.indexOf(p);
   const [fg, bg] = PALETTE[i % PALETTE.length];
-  
-  // Populate header
+
+  // Header
   const av = document.getElementById('ibAvatar');
   av.textContent = inits(p.name);
   av.style.background = bg;
@@ -1389,54 +1630,28 @@ function showInfoBubble(caseId, clickEvent) {
   av.style.border = `1.5px solid ${fg}55`;
   document.getElementById('ibName').textContent = p.name;
   document.getElementById('ibProcedure').textContent = p.procedure;
-  
-  // Populate body with info rows
-  const sc = STATUS_CFG[p.status] || STATUS_CFG['waiting-submit'];
-  const body = document.getElementById('ibBody');
-  body.innerHTML = `
-    <div class="ib-row">
-      <div class="ib-label">Status</div>
-      <div class="ib-value">
-        <span class="badge ${sc.cls}">${sc.icon} ${sc.label}</span>
-        ${p.priority === 'high' ? `<span class="badge b-high" style="margin-left:4px">🔴 High</span>` : ''}
-        ${p.caseReturned ? `<span class="badge b-received" style="margin-left:4px">↩ Returned</span>` : ''}
-      </div>
+
+  // Body: uniform RAG pill + quick-editable checklist + light context
+  const rag = computeRAG(p);
+  const items = ensureChecklist(p);
+  const apptDate = new Date(p.dateScheduled + 'T00:00:00');
+  const daysUntil = Math.round((apptDate - today) / 86400000);
+  const dueTxt = daysUntil === 0 ? 'today' : daysUntil < 0 ? `${-daysUntil}d ago` : `in ${daysUntil}d`;
+
+  const checklistHTML = items.map((it, idx) => `
+    <div class="check-item${it.done ? ' done' : ''}" onclick="event.stopPropagation(); toggleChecklistItem(${p.id}, ${idx})">
+      <div class="check-box">✓</div>
+      <div class="check-text">${it.label}</div>
+    </div>`).join('');
+
+  document.getElementById('ibBody').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
+      <span class="rag-pill ${rag}">● ${RAG_LABEL[rag]}</span>
+      <span style="font-size:10px;color:var(--text-muted);font-family:'DM Mono',monospace">${p.dentist} · appt ${dueTxt}</span>
     </div>
-    <div class="ib-row">
-      <div class="ib-label">Dentist</div>
-      <div class="ib-value">${p.dentist}</div>
-    </div>
-    <div class="ib-row">
-      <div class="ib-label">Appointment</div>
-      <div class="ib-value">${p.dateScheduled} at ${p.apptTime || '—'}</div>
-    </div>
-    <div class="ib-row">
-      <div class="ib-label">Duration</div>
-      <div class="ib-value">${p.dur} minutes</div>
-    </div>
-    ${p.assistant ? `<div class="ib-row">
-      <div class="ib-label">Assistant</div>
-      <div class="ib-value">${p.assistant}</div>
-    </div>` : ''}
-    ${p.room ? `<div class="ib-row">
-      <div class="ib-label">Operatory</div>
-      <div class="ib-value">${p.room}</div>
-    </div>` : ''}
-    ${p.shade ? `<div class="ib-row">
-      <div class="ib-label">Shade</div>
-      <div class="ib-value">${p.shade}</div>
-    </div>` : ''}
-    ${p.notes.trim() ? `<div class="ib-row">
-      <div class="ib-label">Notes</div>
-      <div class="ib-value ib-value-muted">${p.notes}</div>
-    </div>` : ''}
+    <div class="checklist">${checklistHTML}</div>
+    ${p.notes && p.notes.trim() ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-second);line-height:1.45">📝 ${p.notes}</div>` : ''}
   `;
-  
-  // Position the bubble near the click
-  positionInfoBubble(clickEvent);
-  
-  // Show bubble
-  bubble.classList.add('visible');
 }
 
 function positionInfoBubble(clickEvent) {
@@ -1644,12 +1859,14 @@ function renderChart() {
       patientAppts.forEach(p => {
         const sc=STATUS_CFG[p.status]||STATUS_CFG['waiting-submit'];
         
-        // Calculate bar position relative to viewDate
+        // Bar anchors its RIGHT edge to the appointment and extends back by its span
+        // (the lab lead-up window). Positions are relative to viewDate.
         const apptDate = new Date(p.dateScheduled + 'T00:00:00');
-        const barStartRelativeToView = Math.round((apptDate - viewDate) / 86400000);
-        const barSpan = p.barEnd - p.barStart; // Preserve the duration span
-        const barEndRelativeToView = barStartRelativeToView + barSpan;
-        
+        const apptOffset = Math.round((apptDate - viewDate) / 86400000);
+        const barSpan = Math.max(1, p.barEnd - p.barStart); // Preserve the duration span
+        const barStartRelativeToView = apptOffset - barSpan;
+        const barEndRelativeToView = apptOffset;
+
         // Update stored barStart/barEnd to current view for drag operations
         p.barStart = barStartRelativeToView;
         p.barEnd = barEndRelativeToView;
@@ -1667,27 +1884,25 @@ function renderChart() {
           const visibleEnd = Math.min(scaleDays, adjustedBarEnd);
           const visibleSpan = visibleEnd - visibleStart;
           
-          // Get procedure color
+          // Procedure-type color (kept as a small dot so the type is still readable)
           const procColor = getProcedureColor(p.procedure);
-          
-          // Calculate days until appointment (from today, not viewDate)
-          const daysUntil = Math.round((apptDate - today) / 86400000);
-          
-          // Determine if urgency indicator should show
-          const showUrgency = !['received', 'needs-approval', 'ready-insert', 'delivered'].includes(p.status);
-          const urgencyColor = showUrgency ? getUrgencyColor(daysUntil) : null;
-          
+
+          // RAG status drives the bar fill color
+          const rag = computeRAG(p);
+          const items = ensureChecklist(p);
+          const remaining = items.filter(i => !i.done).length;
+
           // Format procedure name - remove parentheses, abbreviate if needed
           let procName = p.procedure.replace(/\s*\([^)]*\)/g, '').trim();
-          
-          // Build bar content
-          let barContent = `<span class="bar-label" title="${p.procedure}">${procName}</span>`;
-          if (span > 1) {
-            barContent += `<span class="bar-days">+${daysUntil}</span>`;
-          }
-          
-          bar.className=`appt-bar`+(activeId===p.id?' active':'');
-          bar.style.cssText=`left:calc(${(visibleStart/scaleDays)*100}% + 5px);width:calc(${(visibleSpan/scaleDays)*100}% - 10px);position:absolute;background:${procColor.bg};border:1px solid ${procColor.border};color:${procColor.text};${urgencyColor ? `border-left:4px solid ${urgencyColor};` : ''}`;
+
+          // Build bar content: procedure dot + name + remaining-items badge
+          const badge = remaining === 0 ? '✓' : `${remaining} left`;
+          let barContent = `<span class="bar-proc-dot" style="background:${procColor.border}"></span>` +
+                           `<span class="bar-label" title="${p.procedure} — ${RAG_LABEL[rag]}">${procName}</span>` +
+                           `<span class="bar-days">${badge}</span>`;
+
+          bar.className=`appt-bar bar-rag-${rag}`+(activeId===p.id?' active':'');
+          bar.style.cssText=`left:calc(${(visibleStart/scaleDays)*100}% + 5px);width:calc(${(visibleSpan/scaleDays)*100}% - 10px);position:absolute`;
           bar.innerHTML=barContent;
           bar.dataset.id=p.id;
           bar.dataset.patientName=patientName; // Store patient name for collision detection
@@ -1942,6 +2157,7 @@ function openDrawer(id) {
   document.getElementById('eCaseReturned').value=p.caseReturned?'true':'false';
   buildChips(p.status);
   setStatus(p.status);
+  renderDrawerChecklist(p);
 
   document.getElementById('saveFlash').classList.remove('show');
   
@@ -1961,6 +2177,20 @@ function openDrawer(id) {
     if(currentTab==='gantt') renderChart();
     if(currentTab==='agenda') renderAgenda();
   }
+}
+
+function renderDrawerChecklist(p){
+  const wrap = document.getElementById('dChecklist');
+  if (!wrap) return;
+  const items = ensureChecklist(p);
+  wrap.innerHTML = items.map((it, idx) => `
+    <div class="check-item${it.done ? ' done' : ''}" onclick="toggleChecklistItem(${p.id}, ${idx})">
+      <div class="check-box">✓</div>
+      <div class="check-text">${it.label}</div>
+    </div>`).join('');
+  const rag = computeRAG(p);
+  const pill = document.getElementById('dChecklistRag');
+  if (pill) { pill.className = `rag-pill ${rag}`; pill.textContent = `● ${RAG_LABEL[rag]}`; }
 }
 
 function renderBadges(p){
@@ -1987,7 +2217,8 @@ function closeDrawer(silent=false){
 function saveCase(){
   const p=cases.find(x=>x.id===activeId); if(!p) return;
   const oldSpan = p.barEnd - p.barStart; // Preserve the span
-  
+  const oldFamily = getProcedureFamily(p.procedure);
+
   // Get name from either field (they're synced)
   p.name=document.getElementById('eName').value;
   p.dentist=document.getElementById('eDentist').value;
@@ -2014,6 +2245,12 @@ function saveCase(){
   p.barStart=Math.round((sd-viewDate)/86400000);
   p.barEnd=p.barStart + oldSpan; // Maintain the span
   
+  // If the procedure family changed, rebuild the checklist to match
+  if (getProcedureFamily(p.procedure) !== oldFamily) {
+    p.checklist = getChecklistForProcedure(p.procedure);
+  }
+  renderDrawerChecklist(p);
+
   // Update both name fields
   document.getElementById('dName').value=p.name;
   document.getElementById('dProcedure').textContent=p.procedure;
@@ -2033,40 +2270,185 @@ function deleteCase(){
 // ═══════════════════════════════════════════════════════
 // HUDDLE
 // ═══════════════════════════════════════════════════════
+// Days from today to a case's appointment
+function daysUntilAppt(p){ return Math.round((new Date(p.dateScheduled+'T00:00:00') - today) / 86400000); }
+
+// One compact case row with RAG dot + flag icons
+function huddleCaseRow(p){
+  const rag = computeRAG(p);
+  const remaining = ensureChecklist(p).filter(i=>!i.done).length;
+  const d = daysUntilAppt(p);
+  const dueTxt = d===0 ? 'today' : d<0 ? `${-d}d ago` : `in ${d}d`;
+  let flags = '';
+  if (p.priority==='high')          flags += `<span class="h-flag" title="High priority">🔴</span>`;
+  if (p.review && p.review!=='none')flags += `<span class="h-flag" title="Needs ${p.review}">⚠️</span>`;
+  if (remaining>0)                  flags += `<span class="h-flag" title="${remaining} status item(s) unchecked" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted)">☐ ${remaining}</span>`;
+  if (p.caseReturned)               flags += `<span class="h-flag" title="Returned from lab">↩️</span>`;
+  return `<div class="h-case" onclick="openDrawer(${p.id})">
+    <div class="h-rag ${rag}" title="${RAG_LABEL[rag]}"></div>
+    <div class="h-case-info">
+      <div class="h-case-name">${p.name}</div>
+      <div class="h-case-sub">${p.procedure.split('(')[0].trim()} · ${p.dentist} · appt ${dueTxt}</div>
+    </div>
+    <div class="h-flags">${flags}</div>
+  </div>`;
+}
+
 function renderHuddle(){
-  const body=document.getElementById('huddleBody'); body.innerHTML='';
-  const weekAgo=toISO(addD(today,-7));
-  const outstanding=cases.filter(x=>x.status!=='delivered');
-  const returnedTW=cases.filter(x=>x.caseReturned&&x.dateSubmitted>=weekAgo);
-  const needsApproval=cases.filter(x=>x.review!=='none');
-  const waitSub=cases.filter(x=>x.status==='waiting-submit');
-  const highPri=cases.filter(x=>x.priority==='high');
-  const readyIns=cases.filter(x=>x.status==='ready-insert');
+  const body = document.getElementById('huddleBody');
+  const ragRank = { red:0, yellow:1, green:2 };
 
-  function card(icon,title,sub,stat,sc,listItems){
-    const c=document.createElement('div'); c.className='huddle-card';
-    c.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">${icon}</div><div><div class="huddle-card-title">${title}</div><div class="huddle-card-sub">${sub}</div></div></div>
-    <div class="huddle-stat" style="color:${sc}">${stat}</div>
-    <div class="huddle-list">${listItems.map(item=>`<div class="huddle-item"><div><div class="hi-name">${item.name}</div><div class="hi-sub">${item.sub}</div></div><span class="hi-badge" style="background:${item.bc};color:${item.tc}">${item.tag}</span></div>`).join('')}${listItems.length===0?`<div style="font-size:11px;color:var(--text-muted);padding:6px 0">None at this time</div>`:''}</div>`;
-    return c;
+  const todayISO = toISO(today);
+  const todays  = cases.filter(p => p.dateScheduled===todayISO)
+                       .sort((a,b)=>(a.apptTime||'').localeCompare(b.apptTime||''));
+  const overdue = cases.filter(p => p.status!=='delivered' && daysUntilAppt(p)<0)
+                       .sort((a,b)=>daysUntilAppt(a)-daysUntilAppt(b));
+  const needsAttn = cases.filter(p =>
+        p.status!=='delivered' && daysUntilAppt(p)>=0 && p.dateScheduled!==todayISO &&
+        (computeRAG(p)==='red' || (p.review&&p.review!=='none') || p.status==='waiting-submit' || p.priority==='high'))
+      .sort((a,b)=> ragRank[computeRAG(a)]-ragRank[computeRAG(b)] || daysUntilAppt(a)-daysUntilAppt(b));
+  const history = cases.filter(p => p.status==='delivered')
+                       .sort((a,b)=> b.dateScheduled.localeCompare(a.dateScheduled));
+
+  function column(icon,title,list,countColor,emptyMsg){
+    const rows = list.length ? list.map(huddleCaseRow).join('') : `<div class="h-empty">${emptyMsg}</div>`;
+    return `<div class="huddle-col">
+      <div class="huddle-col-hd">
+        <span class="hc-icon">${icon}</span>
+        <span class="hc-title">${title}</span>
+        <span class="hc-count" style="background:${countColor}22;color:${countColor}">${list.length}</span>
+      </div>
+      <div class="huddle-col-body">${rows}</div>
+    </div>`;
   }
-  body.appendChild(card('⏳','Cases Outstanding','Active lab cases not yet delivered',outstanding.length,'var(--amber)',
-    outstanding.slice(0,6).map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:x.status==='needs-approval'?'rgba(255,107,107,.15)':x.status==='submitted'?'rgba(245,158,11,.15)':'rgba(52,211,153,.1)',tc:x.status==='needs-approval'?'var(--coral)':x.status==='submitted'?'var(--amber)':'var(--green)'}))));
-  body.appendChild(card('✅','Ready for Insert','Cases cleared and ready for seating',readyIns.length,'var(--green)',
-    readyIns.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:'Ready',bc:'rgba(52,211,153,.15)',tc:'var(--green)'}))));
-  body.appendChild(card('📦','Returned This Week','Lab cases received back in office',returnedTW.length,'var(--sky)',
-    returnedTW.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review!=='none'?'Needs Review':'OK',bc:x.review!=='none'?'rgba(255,107,107,.15)':'rgba(52,211,153,.1)',tc:x.review!=='none'?'var(--coral)':'var(--green)'}))));
-  body.appendChild(card('⚠️','Approvals Needed','Provider action required before insert',needsApproval.length,'var(--coral)',
-    needsApproval.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · ${x.dentist}`,tag:x.review,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
-  body.appendChild(card('◌','Waiting to Submit','Cases not yet sent to lab',waitSub.length,'var(--text-muted)',
-    waitSub.map(x=>({name:x.name,sub:x.waitReason||'Reason not specified',tag:x.priority==='high'?'High':'Normal',bc:x.priority==='high'?'rgba(255,107,107,.15)':'rgba(74,122,155,.1)',tc:x.priority==='high'?'var(--coral)':'var(--text-muted)'}))));
-  body.appendChild(card('🔴','High Priority','Cases flagged as urgent',highPri.length,'var(--coral)',
-    highPri.map(x=>({name:x.name,sub:`${x.procedure.split('(')[0].trim()} · Appt ${x.dateScheduled}`,tag:STATUS_CFG[x.status]?.label||x.status,bc:'rgba(255,107,107,.15)',tc:'var(--coral)'}))));
 
-  const lc=document.createElement('div'); lc.className='huddle-card';
-  lc.innerHTML=`<div class="huddle-card-header"><div class="huddle-card-icon">🎨</div><div><div class="huddle-card-title">Bar Color Legend</div><div class="huddle-card-sub">Status reference</div></div></div>
-  <div class="legend-wrap">${Object.entries(STATUS_CFG).map(([,c])=>`<div class="legend-item"><div class="legend-dot" style="background:${c.agColor[1]}"></div><span class="legend-label">${c.icon} ${c.label}</span></div>`).join('')}</div>`;
-  body.appendChild(lc);
+  const legend = `<div class="huddle-legend-bar">
+    <span class="lg-title">Legend</span>
+    <span class="lg-item"><span class="lg-dot" style="background:var(--green)"></span>On Track — all items done</span>
+    <span class="lg-item"><span class="lg-dot" style="background:var(--amber)"></span>In Progress</span>
+    <span class="lg-item"><span class="lg-dot" style="background:var(--coral)"></span>At Risk — ≤3d out, items missing</span>
+    <span class="lg-item">🔴 High priority</span>
+    <span class="lg-item">⚠️ Needs review</span>
+    <span class="lg-item">☐ Items unchecked</span>
+    <span class="lg-item">↩️ Returned</span>
+  </div>`;
+
+  const histCards = history.length
+    ? history.slice(0,12).map(p=>`<div class="h-hist" onclick="openDrawer(${p.id})">
+        <div class="h-hist-name">${p.name}</div>
+        <div class="h-hist-sub">${p.procedure.split('(')[0].trim()} · ${p.dateScheduled}</div>
+      </div>`).join('')
+    : `<div class="h-empty">No delivered cases yet</div>`;
+
+  body.innerHTML = `
+    <div class="huddle-grid">
+      ${column('📅','Today’s Cases', todays, 'var(--teal)', 'Nothing scheduled today')}
+      ${column('⚠️','Needs Attention', needsAttn, 'var(--amber)', 'All clear — nothing needs action')}
+      ${column('⏰','Overdue', overdue, 'var(--coral)', 'No overdue cases')}
+    </div>
+    <div class="huddle-secondary">
+      <div class="huddle-sec-card">
+        <div class="huddle-sec-hd"><span class="hs-icon">📜</span><span class="hs-title">Case History — Recently Delivered</span><span class="hs-count">${history.length}</span></div>
+        <div class="huddle-sec-body">${histCards}</div>
+      </div>
+    </div>
+    ${legend}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// LAB PORTALS VIEW
+// ═══════════════════════════════════════════════════════
+function renderPortals(){
+  const el = document.getElementById('portalsBody');
+  el.innerHTML = `
+    <div class="portals-intro">
+      <div style="font-size:26px;line-height:1">🔗</div>
+      <div>
+        <h2>Lab Portals</h2>
+        <p>Quick links to lab websites — each opens in a new tab. Handy on the charting computer.<br>
+        These are placeholders; swap in the practice's real labs &amp; URLs in the <code>LAB_PORTALS</code> list.</p>
+      </div>
+    </div>
+    <div class="portals-grid">
+      ${LAB_PORTALS.map(l=>`
+        <a class="portal-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
+          <div class="portal-logo" style="background:${l.color}22;color:${l.color};border:1px solid ${l.color}55">${inits(l.name)}</div>
+          <div class="portal-info">
+            <div class="portal-name">${l.name}</div>
+            <div class="portal-sub">${l.specialty}</div>
+            <div class="portal-url">${l.url.replace(/^https?:\/\//,'')}</div>
+          </div>
+          <svg class="portal-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+        </a>`).join('')}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// METRICS SNAPSHOT
+// ═══════════════════════════════════════════════════════
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function openMetrics(){
+  const y = today.getFullYear(), m = today.getMonth();
+  const inThisMonth = iso => { const d = new Date(iso+'T00:00:00'); return d.getFullYear()===y && d.getMonth()===m; };
+
+  const deliveredMonth = cases.filter(p => p.status==='delivered' && inThisMonth(p.dateScheduled));
+  const outstanding    = cases.filter(p => p.status!=='delivered');
+  const overdue        = cases.filter(p => p.status!=='delivered' && daysUntilAppt(p)<0);
+  const atRisk         = cases.filter(p => computeRAG(p)==='red');
+  const needsApproval  = cases.filter(p => p.review && p.review!=='none');
+
+  // Avg turnaround (days) for delivered cases with both dates
+  const turn = cases.filter(p=>p.status==='delivered').map(p =>
+      Math.round((new Date(p.dateScheduled+'T00:00:00') - new Date(p.dateSubmitted+'T00:00:00'))/86400000))
+      .filter(n=>!isNaN(n)&&n>=0);
+  const avgTurn = turn.length ? Math.round(turn.reduce((a,b)=>a+b,0)/turn.length) : '—';
+
+  // By RAG
+  const ragCounts = { green:0, yellow:0, red:0 };
+  outstanding.forEach(p => ragCounts[computeRAG(p)]++);
+
+  // By provider (outstanding)
+  const provs = [...new Set(cases.map(x=>x.dentist))];
+  const provCounts = provs.map(pr => ({ name:pr, n: outstanding.filter(x=>x.dentist===pr).length, color: PROVIDER_COLORS[pr]||'#7da8c5' }));
+  const provMax = Math.max(1, ...provCounts.map(p=>p.n));
+
+  const ragRow = (label,n,color) => {
+    const pct = outstanding.length ? Math.round(n/outstanding.length*100) : 0;
+    return `<div class="metric-bar-row"><div class="mb-lbl">${label}</div>
+      <div class="metric-bar-track"><div class="metric-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="mb-val">${n}</div></div>`;
+  };
+
+  document.getElementById('metricsSubtitle').textContent = `${MONTHS[m]} ${y} · talking points for the huddle`;
+  document.getElementById('metricsBody').innerHTML = `
+    <div class="metric-grid">
+      <div class="metric-tile"><div class="mt-num" style="color:var(--green)">${deliveredMonth.length}</div><div class="mt-lbl">Delivered this month</div></div>
+      <div class="metric-tile"><div class="mt-num" style="color:var(--coral)">${overdue.length}</div><div class="mt-lbl">Missed / overdue</div></div>
+      <div class="metric-tile"><div class="mt-num" style="color:var(--amber)">${outstanding.length}</div><div class="mt-lbl">Cases outstanding</div></div>
+      <div class="metric-tile"><div class="mt-num" style="color:var(--coral)">${atRisk.length}</div><div class="mt-lbl">At risk (≤3d, missing)</div></div>
+      <div class="metric-tile"><div class="mt-num" style="color:var(--sky)">${needsApproval.length}</div><div class="mt-lbl">Awaiting approval</div></div>
+      <div class="metric-tile"><div class="mt-num">${avgTurn}${avgTurn==='—'?'':'d'}</div><div class="mt-lbl">Avg turnaround</div></div>
+    </div>
+    <div style="margin-top:18px">
+      <div class="metric-sec-lbl">Outstanding by status</div>
+      ${ragRow('🟢 On track', ragCounts.green, 'var(--green)')}
+      ${ragRow('🟡 In progress', ragCounts.yellow, 'var(--amber)')}
+      ${ragRow('🔴 At risk', ragCounts.red, 'var(--coral)')}
+    </div>
+    <div style="margin-top:16px">
+      <div class="metric-sec-lbl">Outstanding by provider</div>
+      ${provCounts.map(p=>`<div class="metric-bar-row"><div class="mb-lbl" style="color:${p.color}">${p.name}</div>
+        <div class="metric-bar-track"><div class="metric-bar-fill" style="width:${Math.round(p.n/provMax*100)}%;background:${p.color}"></div></div>
+        <div class="mb-val">${p.n}</div></div>`).join('')}
+    </div>`;
+
+  document.getElementById('metricsOverlay').classList.add('visible');
+}
+
+function closeMetrics(event){
+  if (event && event.target.closest('.new-case-modal')) return;
+  document.getElementById('metricsOverlay').classList.remove('visible');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2259,10 +2641,10 @@ function handleMouseMove(e) {
       if (newStart !== p.barStart || newEnd !== p.barEnd) {
         p.barStart = newStart;
         p.barEnd = newEnd;
-        // Calculate date from viewDate position (barStart is relative to viewDate)
-        const gridDate = addD(viewDate, newStart);
+        // Appointment = bar's RIGHT edge; update scheduled date to match
+        const gridDate = addD(viewDate, newEnd);
         p.dateScheduled = toISO(gridDate);
-        
+
         // For visual update, calculate grid position
         const gridPos = newStart - dateOffset;
         updateBarPositionAndWidth(dragState.caseId, gridPos, gridPos + span);
@@ -2286,10 +2668,8 @@ function handleMouseMove(e) {
     if (!hasCollision) {
       if (newStart !== p.barStart) {
         p.barStart = newStart;
-        // Calculate date from viewDate position (barStart is relative to viewDate)
-        const gridDate = addD(viewDate, newStart);
-        p.dateScheduled = toISO(gridDate);
-        
+        // Left edge only changes the lead-up length, not the appointment date.
+
         // For visual update, calculate grid position
         const gridPos = newStart - dateOffset;
         updateBarPositionAndWidth(dragState.caseId, gridPos, p.barEnd - dateOffset);
@@ -2313,7 +2693,10 @@ function handleMouseMove(e) {
     if (!hasCollision) {
       if (newEnd !== p.barEnd) {
         p.barEnd = newEnd;
-        
+        // Right edge IS the appointment; update scheduled date to match
+        const gridDate = addD(viewDate, newEnd);
+        p.dateScheduled = toISO(gridDate);
+
         // For visual update, calculate grid position
         const gridPos = p.barStart - dateOffset;
         updateBarPositionAndWidth(dragState.caseId, gridPos, newEnd - dateOffset);
@@ -2398,7 +2781,9 @@ loadTheme();
 // Close drawer/bubbles on Escape key
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (document.getElementById('newCaseOverlay').classList.contains('visible')) {
+    if (document.getElementById('metricsOverlay').classList.contains('visible')) {
+      closeMetrics();
+    } else if (document.getElementById('newCaseOverlay').classList.contains('visible')) {
       closeNewCaseModal();
     } else if (document.getElementById('infoBubble').classList.contains('visible')) {
       closeInfoBubble();
