@@ -819,6 +819,70 @@ body[data-theme="light"] .metric-sec-lbl{color:#0a8f88}
 .metric-bar-track{flex:1;height:8px;background:var(--input-bg);border-radius:4px;overflow:hidden}
 .metric-bar-fill{height:100%;border-radius:4px}
 .metric-bar-row .mb-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-primary);width:26px;text-align:right;flex-shrink:0}
+
+/* ══════════════════════════════════════════════
+   REVIEW CHAT TAB
+══════════════════════════════════════════════ */
+.chat-gate{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+.chat-gate-card{width:360px;max-width:100%;background:var(--panel-bg);border:1px solid var(--border-light);border-radius:14px;padding:28px 26px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+body[data-theme="light"] .chat-gate-card{box-shadow:0 8px 30px rgba(0,0,0,.1)}
+.cg-icon{font-size:30px;line-height:1;margin-bottom:10px}
+.cg-title{font-size:18px;font-weight:600;color:var(--text-primary)}
+.cg-sub{font-size:12px;color:var(--text-muted);margin:6px 0 18px;line-height:1.5}
+.cg-error{font-size:11px;color:var(--coral);min-height:16px;margin-top:8px;text-align:left}
+
+.chat-wrap{flex:1;display:flex;overflow:hidden;min-height:0}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--border)}
+.chat-log{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.chat-empty{margin:auto;text-align:center;color:var(--text-muted);font-size:13px;max-width:440px;line-height:1.6}
+.chat-empty .ce-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.chat-empty .ce-chip{font-size:11px;color:var(--text-second);background:var(--input-bg);border:1px solid var(--border);border-radius:14px;padding:6px 12px;cursor:pointer;transition:all .15s}
+.chat-empty .ce-chip:hover{border-color:var(--teal);color:var(--teal)}
+.msg{display:flex;gap:10px;max-width:760px}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.msg.user .msg-avatar{background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal)}
+.msg.assistant .msg-avatar{background:var(--navy-light);color:var(--sky);border:1px solid var(--border-light)}
+.msg-bubble{padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.55;color:var(--text-primary);overflow-wrap:anywhere}
+.msg.user .msg-bubble{background:var(--teal-dim);border:1px solid rgba(0,201,167,.25);border-top-right-radius:3px}
+.msg.assistant .msg-bubble{background:var(--input-bg);border:1px solid var(--border);border-top-left-radius:3px}
+.msg-bubble p{margin:0 0 8px}.msg-bubble p:last-child{margin-bottom:0}
+.msg-bubble ul,.msg-bubble ol{margin:4px 0 8px;padding-left:20px}
+.msg-bubble li{margin:2px 0}
+.msg-bubble code{font-family:'DM Mono',monospace;font-size:11.5px;background:var(--navy);padding:1px 5px;border-radius:4px;border:1px solid var(--border)}
+body[data-theme="light"] .msg-bubble code{background:var(--navy-mid)}
+.msg-bubble strong{font-weight:600;color:var(--text-primary)}
+.msg-bubble h1,.msg-bubble h2,.msg-bubble h3{font-size:14px;font-weight:600;margin:8px 0 4px}
+.msg-bubble a{color:var(--sky)}
+.msg-typing{display:inline-flex;gap:3px;padding:2px 0}
+.msg-typing span{width:6px;height:6px;border-radius:50%;background:var(--text-muted);animation:typing 1.2s infinite}
+.msg-typing span:nth-child(2){animation-delay:.2s}.msg-typing span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+.chat-input-row{flex-shrink:0;display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--border);background:var(--panel-bg);align-items:flex-end}
+.chat-input{flex:1;resize:none;max-height:160px;background:var(--input-bg);border:1px solid var(--border-light);border-radius:9px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-primary);line-height:1.5}
+.chat-input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)}
+.chat-send{padding:10px 18px;height:40px;flex-shrink:0}
+.chat-send:disabled{opacity:.5;cursor:not-allowed}
+
+.chat-notes{width:320px;flex-shrink:0;display:flex;flex-direction:column;min-height:0;background:var(--panel-bg)}
+.chat-notes-hd{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.cn-title{font-size:12px;font-weight:600;color:var(--text-primary)}
+.cn-savebtn{margin-left:auto;font-size:10px;padding:5px 10px}
+.cn-savebtn:disabled{opacity:.5;cursor:not-allowed}
+.chat-notes-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--border-light) transparent}
+.note-card{background:var(--input-bg);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.note-card-hd{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;user-select:none}
+.note-card-hd:hover{background:var(--row-hover)}
+.note-card-title{font-size:12px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.note-card-caret{color:var(--text-muted);font-size:10px;transition:transform .15s}
+.note-card.open .note-card-caret{transform:rotate(90deg)}
+.note-card-body{display:none;padding:10px 12px;border-top:1px solid var(--border);font-size:12px;line-height:1.55;color:var(--text-second);max-height:340px;overflow-y:auto}
+.note-card.open .note-card-body{display:block}
+.note-card-body h1,.note-card-body h2,.note-card-body h3{font-size:13px;font-weight:600;color:var(--text-primary);margin:8px 0 4px}
+.note-card-body ul{margin:4px 0;padding-left:18px}
+.note-card-body a{color:var(--sky)}
+.cn-empty{font-size:11px;color:var(--text-muted);text-align:center;padding:20px 8px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -840,6 +904,7 @@ body[data-theme="light"] .metric-sec-lbl{color:#0a8f88}
       <button class="tab-btn active"  data-tab="gantt"   onclick="switchTab('gantt')">📅 Schedule</button>
       <button class="tab-btn"         data-tab="huddle"  onclick="switchTab('huddle')">📋 Huddle</button>
       <button class="tab-btn"         data-tab="portals" onclick="switchTab('portals')">🔗 Lab Portals</button>
+      <button class="tab-btn"         data-tab="chat"    onclick="switchTab('chat')">💬 Review Chat</button>
     </div>
   </div>
 
@@ -905,6 +970,40 @@ body[data-theme="light"] .metric-sec-lbl{color:#0a8f88}
   <!-- ════════ LAB PORTALS TAB ════════ -->
   <div class="tab-panel" id="tab-portals">
     <div class="portals-body" id="portalsBody"></div>
+  </div>
+
+  <!-- ════════ REVIEW CHAT TAB ════════ -->
+  <div class="tab-panel" id="tab-chat">
+    <!-- Passcode gate -->
+    <div class="chat-gate" id="chatGate">
+      <div class="chat-gate-card">
+        <div class="cg-icon">💬</div>
+        <div class="cg-title">Review Chat</div>
+        <div class="cg-sub">Discuss feedback and future changes with Claude. Enter the shared passcode to continue.</div>
+        <input class="f-inp" type="text" id="cgName" placeholder="Your name (for notes)" style="margin-bottom:8px"/>
+        <input class="f-inp" type="password" id="cgPass" placeholder="Passcode" onkeydown="if(event.key==='Enter')submitPasscode()"/>
+        <div class="cg-error" id="cgError"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px;padding:9px" onclick="submitPasscode()">Enter</button>
+      </div>
+    </div>
+
+    <!-- Chat workspace -->
+    <div class="chat-wrap" id="chatWrap" style="display:none">
+      <div class="chat-main">
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chatInput" rows="1" placeholder="Ask a question or share feedback…" onkeydown="chatKeydown(event)"></textarea>
+          <button class="btn btn-primary chat-send" id="chatSend" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+      <div class="chat-notes">
+        <div class="chat-notes-hd">
+          <span class="cn-title">📝 Feedback Notes</span>
+          <button class="btn btn-ghost cn-savebtn" id="cnSaveBtn" onclick="saveNoteFromChat()">Save discussion</button>
+        </div>
+        <div class="chat-notes-list" id="chatNotesList"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ════════ NEW CASE MODAL ════════ -->
@@ -1438,6 +1537,7 @@ function switchTab(tab) {
   if (tab==='agenda') renderAgenda();   // kept for reference; no longer in the nav
   if (tab==='huddle') renderHuddle();
   if (tab==='portals') renderPortals();
+  if (tab==='chat') initChat();
 }
 
 function setScale(days) {
@@ -2819,6 +2919,238 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+// ═══════════════════════════════════════════════════════
+// REVIEW CHAT
+// ═══════════════════════════════════════════════════════
+let reviewPass = sessionStorage.getItem('reviewPass') || '';
+let reviewName = sessionStorage.getItem('reviewName') || '';
+let chatMessages = [];
+let chatBusy = false;
+let chatInit = false;
+
+function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Minimal, safe markdown → HTML (escapes first, then applies a small subset)
+function mdToHtml(src){
+  const inline = s => escapeHtml(s)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const lines = (src||'').replace(/\r/g,'').split('\n');
+  let out='', inList=false, listTag='ul';
+  const closeList=()=>{ if(inList){ out+='</'+listTag+'>'; inList=false; } };
+  for(const raw of lines){
+    const line = raw.replace(/\s+$/,'');
+    let m;
+    if(/^\s*$/.test(line)){ closeList(); continue; }
+    if((m=line.match(/^(#{1,3})\s+(.*)$/))){ closeList(); const lvl=m[1].length; out+=`<h${lvl}>${inline(m[2])}</h${lvl}>`; continue; }
+    if((m=line.match(/^\s*[-*]\s+(.*)$/))){ if(!inList||listTag!=='ul'){closeList();listTag='ul';out+='<ul>';inList=true;} out+=`<li>${inline(m[1])}</li>`; continue; }
+    if((m=line.match(/^\s*\d+\.\s+(.*)$/))){ if(!inList||listTag!=='ol'){closeList();listTag='ol';out+='<ol>';inList=true;} out+=`<li>${inline(m[1])}</li>`; continue; }
+    closeList(); out+=`<p>${inline(line)}</p>`;
+  }
+  closeList();
+  return out;
+}
+
+function initChat(){
+  const gate=document.getElementById('chatGate'), wrap=document.getElementById('chatWrap');
+  if(reviewPass){
+    gate.style.display='none'; wrap.style.display='flex';
+    if(!chatInit){ chatInit=true; renderChatLog(); loadNotes().catch(e=>{ if(/passcode/i.test(e.message)) deAuth(); }); }
+  } else {
+    gate.style.display='flex'; wrap.style.display='none';
+    setTimeout(()=>document.getElementById('cgPass').focus(),60);
+  }
+}
+
+async function submitPasscode(){
+  const pass=document.getElementById('cgPass').value.trim();
+  const name=document.getElementById('cgName').value.trim();
+  const err=document.getElementById('cgError');
+  if(!pass){ err.textContent='Enter the passcode.'; return; }
+  err.textContent='Checking…';
+  reviewPass=pass; reviewName=name;
+  try{
+    await loadNotes(); // validates the passcode server-side
+    sessionStorage.setItem('reviewPass',pass);
+    sessionStorage.setItem('reviewName',name);
+    err.textContent='';
+    chatInit=true;
+    document.getElementById('chatGate').style.display='none';
+    document.getElementById('chatWrap').style.display='flex';
+    renderChatLog();
+  }catch(e){
+    reviewPass=''; reviewName='';
+    err.textContent = /passcode/i.test(e.message) ? 'Incorrect passcode.' : ('Error: '+e.message);
+  }
+}
+
+function deAuth(){
+  reviewPass=''; reviewName=''; chatInit=false;
+  sessionStorage.removeItem('reviewPass'); sessionStorage.removeItem('reviewName');
+  document.getElementById('chatGate').style.display='flex';
+  document.getElementById('chatWrap').style.display='none';
+}
+
+const CHAT_SUGGESTIONS = [
+  'What does the red/yellow/green on the schedule bars mean?',
+  'How could the Huddle surface overdue cases better?',
+  'What would you change about the lab checklist?',
+];
+
+function renderChatLog(){
+  const log=document.getElementById('chatLog');
+  if(chatMessages.length===0){
+    log.innerHTML=`<div class="chat-empty">
+      <div style="font-size:26px;margin-bottom:8px">💬</div>
+      Ask questions, share feedback, or discuss future changes to the tracker.<br>Saved notes are committed to the repo for Michael to review before the next deploy.
+      <div class="ce-chips">${CHAT_SUGGESTIONS.map(s=>`<div class="ce-chip" onclick="useSuggestion(this)">${escapeHtml(s)}</div>`).join('')}</div>
+    </div>`;
+    return;
+  }
+  log.innerHTML = chatMessages.map(m=>{
+    const av = m.role==='user' ? (reviewName? escapeHtml(reviewName.slice(0,2).toUpperCase()) : 'You') : '✦';
+    const inner = (m.streaming && !m.content)
+      ? `<span class="msg-typing"><span></span><span></span><span></span></span>`
+      : mdToHtml(m.content);
+    return `<div class="msg ${m.role}"><div class="msg-avatar">${av}</div><div class="msg-bubble">${inner}</div></div>`;
+  }).join('');
+  scrollChat();
+}
+
+function useSuggestion(el){
+  const inp=document.getElementById('chatInput');
+  inp.value=el.textContent; inp.focus(); autoGrow(inp);
+}
+function scrollChat(){ const log=document.getElementById('chatLog'); log.scrollTop=log.scrollHeight; }
+function autoGrow(t){ t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,160)+'px'; }
+function chatKeydown(e){ autoGrow(e.target); if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChat(); } }
+
+function updateChatControls(){
+  document.getElementById('chatSend').disabled = chatBusy;
+  const sb=document.getElementById('cnSaveBtn');
+  sb.disabled = chatBusy || chatMessages.filter(m=>!m.streaming).length < 2;
+}
+
+// Stream a reply from /api/chat, calling onDelta(accumulatedText) as it arrives
+async function streamChat(messages, onDelta){
+  const resp = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'content-type':'application/json','x-review-passcode':reviewPass},
+    body: JSON.stringify({ messages })
+  });
+  if(!resp.ok || !resp.body){
+    let msg='HTTP '+resp.status;
+    try{ const j=await resp.json(); if(j.error) msg=j.error; }catch(_){}
+    throw new Error(msg);
+  }
+  const reader=resp.body.getReader(), dec=new TextDecoder();
+  let buf='', full='';
+  while(true){
+    const {value,done}=await reader.read(); if(done) break;
+    buf+=dec.decode(value,{stream:true});
+    let nl;
+    while((nl=buf.indexOf('\n'))>=0){
+      const line=buf.slice(0,nl).trim(); buf=buf.slice(nl+1);
+      if(!line.startsWith('data:')) continue;
+      const data=line.slice(5).trim();
+      if(!data||data==='[DONE]') continue;
+      let ev; try{ ev=JSON.parse(data); }catch(_){ continue; }
+      if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.type==='text_delta'){ full+=ev.delta.text; onDelta&&onDelta(full); }
+      else if(ev.type==='error'){ throw new Error((ev.error&&ev.error.message)||'stream error'); }
+    }
+  }
+  return full;
+}
+
+async function sendChat(){
+  if(chatBusy) return;
+  const inp=document.getElementById('chatInput');
+  const text=inp.value.trim(); if(!text) return;
+  inp.value=''; inp.style.height='auto';
+  chatMessages.push({role:'user',content:text});
+  chatMessages.push({role:'assistant',content:'',streaming:true});
+  chatBusy=true; updateChatControls(); renderChatLog();
+
+  const send = chatMessages.filter(m=>!m.streaming);
+  const bubbles=document.querySelectorAll('#chatLog .msg-bubble');
+  const bubble=bubbles[bubbles.length-1];
+  const assistant=chatMessages[chatMessages.length-1];
+  try{
+    const full=await streamChat(send,(acc)=>{ assistant.content=acc; if(bubble) bubble.innerHTML=mdToHtml(acc); scrollChat(); });
+    assistant.content=full; assistant.streaming=false;
+  }catch(e){
+    assistant.streaming=false;
+    assistant.content = '⚠ '+e.message;
+    if(bubble) bubble.innerHTML=`<p style="color:var(--coral)">⚠ ${escapeHtml(e.message)}</p>`;
+    if(/passcode/i.test(e.message)){ setTimeout(deAuth,1200); }
+  }
+  chatBusy=false; updateChatControls(); renderChatLog();
+}
+
+function defaultNoteTitle(){
+  const firstUser=chatMessages.find(m=>m.role==='user');
+  if(!firstUser) return 'Feedback note';
+  return firstUser.content.split(/\s+/).slice(0,6).join(' ').slice(0,60);
+}
+
+async function saveNoteFromChat(){
+  if(chatBusy) return;
+  if(chatMessages.filter(m=>!m.streaming).length < 2){ alert('Have a short discussion first, then save it as a note.'); return; }
+  const sb=document.getElementById('cnSaveBtn'); const label=sb.textContent;
+  chatBusy=true; updateChatControls(); sb.disabled=true; sb.textContent='Summarizing…';
+  try{
+    const summaryReq = chatMessages.filter(m=>!m.streaming).concat([{role:'user',content:
+      'Summarize our discussion above into a concise markdown feedback note for the developer. Use exactly these sections: "## Summary", "## Requested changes" (a bulleted list), and "## Open questions" (a bulleted list; write "None" if there are none). Output only the markdown note — no preamble or sign-off.'}]);
+    const md = await streamChat(summaryReq, null);
+    const title = prompt('Note title:', defaultNoteTitle());
+    if(title===null){ return; } // cancelled
+    sb.textContent='Saving…';
+    const resp = await fetch('/api/notes',{
+      method:'POST',
+      headers:{'content-type':'application/json','x-review-passcode':reviewPass},
+      body: JSON.stringify({ title: title || 'Feedback note', markdown: md, author: reviewName })
+    });
+    const j = await resp.json().catch(()=>({}));
+    if(!resp.ok) throw new Error(j.error||('HTTP '+resp.status));
+    await loadNotes();
+  }catch(e){
+    alert('Could not save note: '+e.message);
+    if(/passcode/i.test(e.message)) deAuth();
+  }finally{
+    sb.textContent=label; chatBusy=false; updateChatControls();
+  }
+}
+
+async function loadNotes(){
+  const resp = await fetch('/api/notes',{ headers:{'x-review-passcode':reviewPass} });
+  if(resp.status===401) throw new Error('Invalid passcode');
+  const j = await resp.json().catch(()=>({}));
+  if(!resp.ok) throw new Error(j.error||('HTTP '+resp.status));
+  renderNotes(j.notes||[]);
+  return j.notes||[];
+}
+
+function renderNotes(notes){
+  const list=document.getElementById('chatNotesList');
+  if(!notes.length){
+    list.innerHTML=`<div class="cn-empty">No feedback notes yet.<br>Save a discussion to create one — it commits to <code>/feedback</code> in the repo.</div>`;
+    return;
+  }
+  list.innerHTML = notes.map((n,i)=>{
+    const title = n.name.replace(/^\d{4}-\d{2}-\d{2}-\d{4}-/,'').replace(/\.md$/,'').replace(/-/g,' ');
+    return `<div class="note-card" id="note-${i}">
+      <div class="note-card-hd" onclick="toggleNote(${i})">
+        <span class="note-card-title">${escapeHtml(title)}</span>
+        <a href="${n.html_url||'#'}" target="_blank" rel="noopener" title="View on GitHub" onclick="event.stopPropagation()" style="color:var(--text-muted);font-size:11px;text-decoration:none">↗</a>
+        <span class="note-card-caret">▸</span>
+      </div>
+      <div class="note-card-body">${mdToHtml(n.content)}</div>
+    </div>`;
+  }).join('');
+}
+function toggleNote(i){ document.getElementById('note-'+i).classList.toggle('open'); }
 
 renderLeft();
 renderChart();
