@@ -2928,6 +2928,7 @@ let reviewName = sessionStorage.getItem('reviewName') || '';
 let chatMessages = [];
 let chatBusy = false;
 let chatInit = false;
+let feedbackNotes = [];
 
 function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -3114,7 +3115,13 @@ async function saveNoteFromChat(){
     });
     const j = await resp.json().catch(()=>({}));
     if(!resp.ok) throw new Error(j.error||('HTTP '+resp.status));
-    await loadNotes();
+    // Show it immediately — GitHub's contents list can lag a second or two after a commit
+    const noteName = (j.path||'').split('/').pop() || ((title||'note')+'.md');
+    feedbackNotes = [{ name:noteName, path:j.path, html_url:j.html_url, content:md, _optimistic:true },
+                     ...feedbackNotes.filter(n=>n.path!==j.path)];
+    renderNotes(feedbackNotes);
+    loadNotes().catch(()=>{});                           // reconcile now…
+    setTimeout(()=>loadNotes().catch(()=>{}), 2500);     // …and once more once GitHub settles
   }catch(e){
     alert('Could not save note: '+e.message);
     if(/passcode/i.test(e.message)) deAuth();
@@ -3128,8 +3135,13 @@ async function loadNotes(){
   if(resp.status===401) throw new Error('Invalid passcode');
   const j = await resp.json().catch(()=>({}));
   if(!resp.ok) throw new Error(j.error||('HTTP '+resp.status));
-  renderNotes(j.notes||[]);
-  return j.notes||[];
+  const fetched = j.notes||[];
+  // Preserve a just-saved note that GitHub's contents list hasn't caught up to yet
+  const seen = new Set(fetched.map(n=>n.path));
+  const pending = feedbackNotes.filter(n=>n._optimistic && !seen.has(n.path));
+  feedbackNotes = [...pending, ...fetched];
+  renderNotes(feedbackNotes);
+  return feedbackNotes;
 }
 
 function renderNotes(notes){
